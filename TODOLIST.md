@@ -1,8 +1,7 @@
 - Serial Deporte via MQTT
 Ecran 
 Cloturer OTA au bout de 5min + MDP
-Test perte wifi (fonction a creer)
-Test perte MQTT
+Test fonctionnement perte wifi 
 PIR A définir
 
 GPIO 5 D1 SDA

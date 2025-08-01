@@ -28,13 +28,13 @@ bool init_bme280();
 void init_OTA();
 
 void mqtt_setup();
-bool check_wifi();
 bool mqtt_reconnect();
 PubSubClient& getMqttClient();
 
 void t1Callback();
 void t2Callback();
 void update_display();
+void check_wifi();
 
 void regul_therm();
 

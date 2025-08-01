@@ -1,6 +1,6 @@
 
-#ifndef MY_FUNCTIONS_H
-#define MY_FUNCTIONS_H
+#ifndef MY_FUNCTIONS_D
+#define MY_FUNCTIONS_D
 
 
 
