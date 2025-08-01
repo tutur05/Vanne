@@ -27,12 +27,12 @@ int consigne = 18;
 
 const char *ssid2 = SSID2;
 const char *password2 = PASSWIFI2;
-const char *ssid = SSID;
-const char *password = PASSWIFI;
+const char *ssid = SSID1;
+const char *password = PASSWIFI1;
 float temperature = 0;
 float humidity = 0;
 unsigned last_pir = 0;
-unsigned last_menu = 0;
+unsigned last_menu = 0;s
 
 Task t1(10000, TASK_FOREVER, &t1Callback); // toutes les 10s MAJ capteurs
 Task t2(900, TASK_FOREVER, &t2Callback);   // Tache MAJ MQTT
