@@ -18,31 +18,17 @@
 #include "interaction.h"
 // Adafruit_BME280 bme; // I2C/
 
-#define SEALEVELPRESSURE_HPA (1013.25)
 
-
-
-#ifdef LUISANT
-#define MQTT_SERVER "192.168.0.184"
-//#define SSID "Livebox-E300"
-//#define PASSWIFI "FdJuA4RYCYy5VtMYug"
-#endif
-
-#ifdef BETA
-//#define SSID "Betamachine_Tec"
-//#define PASSWIFI "betatecissogood"
-#define MQTT_SERVER "10.11.12.10"
-#endif
 
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 
 byte mode = 0; // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
 int consigne = 18;
 
-const char *ssid2 = "Livebox-E300";
-const char *password2 = "FdJuA4RYCYy5VtMYug";
-const char *ssid = "Betamachine_Tec";
-const char *password = "betatecissogood";
+const char *ssid2 = SSID2;
+const char *password2 = PASSWIFI2;
+const char *ssid = SSID;
+const char *password = PASSWIFI;
 float temperature = 0;
 float humidity = 0;
 unsigned last_pir = 0;
@@ -98,6 +84,8 @@ void loop()
 {
   runner.execute();
 
+  if(millis() < 300000) // 5 minutes pour faire la MAJ de l'OTA
   ArduinoOTA.handle();
+
  init_pin();
 }

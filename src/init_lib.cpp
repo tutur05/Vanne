@@ -33,7 +33,7 @@ void init_OTA()
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
   // No authentication by default
-  // ArduinoOTA.setPassword((const char *)"123");
+  ArduinoOTA.setPassword((const char *)"tototititata28");
   ArduinoOTA.onStart([]()
                      { Serial.println("Start"); });
   ArduinoOTA.onEnd([]()
@@ -50,6 +50,8 @@ void init_OTA()
     else if (error == OTA_END_ERROR) Serial.println("End Failed"); });
   ArduinoOTA.begin();
 }
+
+
 
 void mqtt_setup()
 {

@@ -35,7 +35,6 @@ void t1Callback();
 void t2Callback();
 void update_display();
 void check_wifi();
-
 void regul_therm();
 
 void init_pin();
