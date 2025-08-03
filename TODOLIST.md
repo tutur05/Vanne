@@ -3,6 +3,8 @@ Ecran
 Cloturer OTA au bout de 5min + MDP
 Test fonctionnement perte wifi 
 PIR A définir
+Afficher recherche wifi en cours
+Améliorer MQTT reconnexio n(actuellement trop frequent et bloquant si serveur MQTT down) => Faire une connexion a chaque envoie plutot que de garder la liaison ? => PB dans ce cas pour recevoir les ordres ? Ou alors envoyer des msg avec une persistance (possible via "messageretained") 
 
 GPIO 5 D1 SDA
 GPIO4 D2 SCL 

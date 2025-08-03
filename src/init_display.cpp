@@ -8,6 +8,7 @@ extern unsigned last_menu;
 extern float temperature;
 extern int consigne;
 extern byte mode;
+extern float gauss;
 
 void update_display()
 {
@@ -17,7 +18,7 @@ void update_display()
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
     display.println(WiFi.localIP());
- 
+  
 
 
     display.setTextSize(3);
@@ -33,16 +34,20 @@ void update_display()
         display.println("MANUEL");
     else if (mode == 1)
         display.println("ECO");
-    else
+            else if (mode == 2)
         display.println("AUTO");
+    else if(mode == 3)
+        display.println("TEST");
 
     display.setTextSize(1);
-    display.print("           ");
+    display.print(gauss);
+    display.print("  ");
     display.print(temperature);
     display.print((char)247); // °
     display.println("C");
 
     int32_t rssi = WiFi.RSSI(); // Valeur RSSI (en dBm)
+    
 
     // Convertir RSSI en nombre de barres (0 à 4)
     int bars = 0;   

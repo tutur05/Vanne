@@ -2,7 +2,7 @@
 #ifndef MY_FUNCTIONS_H
 #define MY_FUNCTIONS_H
 
-#define LUISANT //localisation BETA ou LUISANT
+#define BETA //localisation BETA ou LUISANT
 
 
 #include <PubSubClient.h>
@@ -37,7 +37,7 @@ void update_display();
 void check_wifi();
 void regul_therm();
 
-void init_pin();
+void check_pin_button();
 
 #ifdef LUISANT
 #define MQTT_SERVER "192.168.0.184"

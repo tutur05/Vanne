@@ -8,8 +8,9 @@ PubSubClient& getMqttClient();
 extern unsigned last_pir ;
 extern int consigne;
 extern byte mode;
+extern float gauss;
 
-void init_pin();
+void check_pin_button();
 
 
 #endif

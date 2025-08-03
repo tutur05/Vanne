@@ -32,11 +32,12 @@ const char *password = PASSWIFI1;
 float temperature = 0;
 float humidity = 0;
 unsigned last_pir = 0;
-unsigned last_menu = 0;s
+unsigned last_menu = 0;
+float gauss = 0;
 
-Task t1(10000, TASK_FOREVER, &t1Callback); // toutes les 10s MAJ capteurs
+Task t1(60000, TASK_FOREVER, &t1Callback); // toutes les 10s MAJ capteurs
 Task t2(900, TASK_FOREVER, &t2Callback);   // Tache MAJ MQTT
-Task t3(5000, TASK_FOREVER, &update_display);
+Task t3(500, TASK_FOREVER, &update_display);
 Task t4(30000, TASK_FOREVER, &check_wifi); // toutes les 30s on check le wifi;
 Scheduler runner;
 
@@ -44,22 +45,22 @@ Scheduler runner;
 
 void setup()
 {
-  pinMode(PIN_PIR, INPUT);
-  pinMode(PIN_BTNUP, INPUT_PULLUP);
-  pinMode(PIN_BTNMID, INPUT_PULLUP);
-  pinMode(PIN_BTNDOWN,INPUT_PULLUP);
-  init_bme280();
-
-  init_OTA();
-  delay(5000); // Delay pour s'assurer qu'on ai le temps de upper en cas de bug
-               // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   {
     Serial.println(F("SSD1306 allocation failed"));
 
   }
 
-  display.clearDisplay();
+  update_display();
+  pinMode(PIN_PIR, INPUT);
+  pinMode(PIN_BTNUP, INPUT_PULLUP);
+  pinMode(PIN_BTNMID, INPUT_PULLUP);
+  pinMode(PIN_BTNDOWN,INPUT_PULLUP);
+  pinMode(A0, INPUT); // Pin A0 pour la sonde magnetique
+  init_bme280();
+
+  init_OTA();
+
 
   Serial.begin(115200);
   pinMode(LED, OUTPUT);
@@ -78,14 +79,16 @@ void setup()
   t2.enable();
   t3.enable();
   t4.enable();
+  init_moteur();
 }
 
 void loop()
 {
+
   runner.execute();
 
   if(millis() < 300000) // 5 minutes pour faire la MAJ de l'OTA
   ArduinoOTA.handle();
 
- init_pin();
+ check_pin_button();
 }

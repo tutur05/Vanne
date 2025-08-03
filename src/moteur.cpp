@@ -1,5 +1,6 @@
 #include "moteur.h"
 #include "config.h"
+extern float gauss;
 void init_moteur()
 {
   pinMode(PIN_VANNE1, OUTPUT);

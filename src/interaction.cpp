@@ -1,10 +1,10 @@
 #include "interaction.h"
 #include "config.h"
 #include "init_display.h"
-
+#include "moteur.h"
 #include <Arduino.h>
 
-void init_pin()
+void check_pin_button()
 {
     if (digitalRead(PIN_PIR))
         last_pir = millis();
@@ -16,7 +16,7 @@ void init_pin()
     bool sel = digitalRead(PIN_BTNMID);
     bool down = digitalRead(PIN_BTNDOWN);
 
-     // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
+     // 0 MANUEL // 1 ECO // 2 AUTO (PIR) // 3 Moteur
     // Détection front descendant
     if (up == LOW && lastUp == HIGH)
     {
@@ -27,11 +27,16 @@ void init_pin()
         {
             consigne = consigne +1;
         }
+                else if (mode == 3)
+        {
+            vanneO();
+        }
+        
                 update_display();
 
     }
 
-    if (sel == LOW && lastSel == HIGH)
+    if (sel == LOW && lastSel == HIGH) //Bacule du mode via btn milieu 
     {
         Serial.println("sel");
 
@@ -50,8 +55,13 @@ void init_pin()
         }
         else if (mode == 2)
         {
+            mode = 3;Serial.println("Passage en M3");
+        }
+                else if (mode == 3)
+        {
             mode = 0;Serial.println("Passage en M0");
         }
+
 
         update_display();
     }
@@ -65,9 +75,48 @@ void init_pin()
         {
             consigne = consigne - 1;
         }
+          else if (mode == 3)
+        {
+            vanneF();
+        }
         update_display();
 
     }
+
+    if(mode == 3) //Extinction des vannes lors du relachement du button
+    {
+   gauss = analogRead(A0); // Lecture de la sonde magnétique
+
+    if (up == HIGH && lastUp == LOW)
+    {
+        Serial.println("up relache");
+        vanneOff();
+    }
+        if (down == HIGH && lastDown == LOW)
+    {
+        Serial.println("down relache");
+        vanneOff();
+    }
+
+    if(digitalRead(PIN_VANNE0) == HIGH)
+    {
+        if(gauss >545){
+        Serial.println("Vanne0 OFF");
+        vanneOff();
+        }
+    }
+
+        if(digitalRead(PIN_VANNE1) == HIGH) //vanneF = btn Bas
+    {
+        if(gauss <500)
+        vanneOff();
+    }
+
+
+
+    }
+
+
 
     lastSel = sel;
     lastUp = up;

@@ -1,6 +1,6 @@
 
-#ifndef MY_FUNCTIONS_D
-#define MY_FUNCTIONS_D
+#ifndef MOTEUR_H
+#define MOTEUR_H
 #include <Arduino.h>
 void vanneF();
 void vanneO();
