@@ -34,6 +34,8 @@ float humidity = 0;
 unsigned last_pir = 0;
 unsigned last_menu = 0;
 float gauss = 0;
+short calib1 = 540;
+short calib2 = 600;
 
 Task t1(60000, TASK_FOREVER, &t1Callback); // toutes les 10s MAJ capteurs
 Task t2(900, TASK_FOREVER, &t2Callback);   // Tache MAJ MQTT
@@ -87,7 +89,7 @@ void loop()
 
   runner.execute();
 
-  if(millis() < 300000) // 5 minutes pour faire la MAJ de l'OTA
+  if(millis() < 3000000) // 5 minutes pour faire la MAJ de l'OTA
   ArduinoOTA.handle();
 
  check_pin_button();

@@ -1,6 +1,8 @@
 #include "moteur.h"
 #include "config.h"
 extern float gauss;
+extern short calib1;
+extern short calib2;
 void init_moteur()
 {
   pinMode(PIN_VANNE1, OUTPUT);
@@ -11,15 +13,20 @@ void init_moteur()
 
 void vanneF()
 {
+
+
   digitalWrite(PIN_VANNE1, HIGH);
   digitalWrite(PIN_VANNE0, LOW);
+  
 }
 
 void vanneO()
 {
+
   digitalWrite(PIN_VANNE1, LOW);
   digitalWrite(PIN_VANNE0, HIGH);
-}
+
+  }
 
 void vanneOff()
 {

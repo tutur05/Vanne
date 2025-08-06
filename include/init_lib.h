@@ -31,11 +31,15 @@ void mqtt_setup();
 bool mqtt_reconnect();
 PubSubClient& getMqttClient();
 
+
+
 void t1Callback();
 void t2Callback();
 void update_display();
 void check_wifi();
 void regul_therm();
+
+
 
 void check_pin_button();
 
