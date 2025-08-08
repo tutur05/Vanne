@@ -14,11 +14,11 @@
 #include <WiFiUdp.h>
 
 #include <ArduinoOTA.h>
-#include <Wire.h>
 
 #include <ESP8266WiFi.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
+
+
+
 
 
 extern Adafruit_BME280 bme;
