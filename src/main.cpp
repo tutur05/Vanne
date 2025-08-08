@@ -30,6 +30,7 @@ short calib1 = 540;
 short calib2 = 600;
 
 extern String message1;
+byte mode_max = 5 ; //Menu accessible
 
 
 
@@ -74,6 +75,9 @@ void loop()
 
   if(millis() < 3000000) // 5 minutes pour faire la MAJ de l'OTA
   ArduinoOTA.handle();
+  else
+ mode_max = 2; //Menu accessible seulement les 5 minutes suivant le boot
+
 
  check_pin_button();
 }

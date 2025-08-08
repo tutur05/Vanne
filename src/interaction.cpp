@@ -52,7 +52,7 @@ void check_pin_button()
 
         getMqttClient().publish("VanneV1/button", "sel");
 
-        if (mode >= 5)
+        if (mode >= mode_max)
         {
             mode = 0;
         }

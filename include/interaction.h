@@ -10,7 +10,7 @@ extern byte mode;
 extern float gauss;
 extern short calib1;
 extern short calib2;
-
+extern byte mode_max; //Menu prog  accessible
 void check_pin_button();
 
 
