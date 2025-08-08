@@ -32,7 +32,11 @@ float gauss = 0;
 short calib1 = 540;
 short calib2 = 600;
 
-
+Task t1(60000, TASK_FOREVER, &t1Callback); // toutes les 10s MAJ capteurs
+Task t2(900, TASK_FOREVER, &t2Callback);   // Tache MAJ MQTT
+Task t3(500, TASK_FOREVER, &update_display);
+Task t4(30000, TASK_FOREVER, &check_wifi); // toutes les 30s on check le wifi;
+Scheduler runner;
 
 // DHTesp dht;
 
