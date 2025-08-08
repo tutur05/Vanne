@@ -17,7 +17,7 @@
 
 
 void update_display();
-
+void update_message();
 
 
 

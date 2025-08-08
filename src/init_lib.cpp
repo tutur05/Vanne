@@ -1,5 +1,7 @@
 #include "init_lib.h"
 #include "config.h"
+#include "scheduler.h"
+#include "init_display.h"
 
 const char *mqtt_server = MQTT_SERVER;
 const int mqtt_port = 1883;
@@ -19,6 +21,9 @@ extern int consigne;
 extern byte mode;
 extern unsigned last_pir;
 extern unsigned last_menu;
+extern Task t3;
+extern Adafruit_SSD1306 display;
+extern String message1;
 
 Adafruit_BME280 bme; // définition de la variable globale
 
@@ -50,8 +55,6 @@ void init_OTA()
     else if (error == OTA_END_ERROR) Serial.println("End Failed"); });
   ArduinoOTA.begin();
 }
-
-
 
 void mqtt_setup()
 {
@@ -87,6 +90,7 @@ PubSubClient &getMqttClient()
 
 void t1Callback()
 {
+  check_wifi();
 
   temperature = bme.readTemperature();
   humidity = bme.readHumidity();
@@ -107,22 +111,9 @@ void t2Callback() // maintient de liaison MQTT
   getMqttClient().loop(); // maintient le mqtt en ligne (1s max entre 2 loop)
 }
 
-bool checkWifi()
-{
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.println("WiFi disconnected, reconnecting...");
-    WiFi.begin(ssid, password);
-    delay(5000);
-  }
-  if (WiFi.status() == WL_CONNECTED)
-    return true;
-  else
-    return false;
-}
-
 void regul_therm()
 {
+
   // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
   if (mode == 0)
   {
@@ -169,8 +160,10 @@ void regul_therm()
 
 void check_wifi()
 {
+
   if (WiFi.status() != WL_CONNECTED)
   {
+
     WiFi.disconnect();
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
@@ -199,4 +192,10 @@ void check_wifi()
       digitalWrite(LED, HIGH);
     }
   }
+  else
+  {
+    IPAddress ip = WiFi.localIP();
+    message1 = ip.toString().c_str();
+  }
+
 }

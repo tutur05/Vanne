@@ -2,7 +2,7 @@
 #ifndef MY_FUNCTIONS_H
 #define MY_FUNCTIONS_H
 
-#define BETA //localisation BETA ou LUISANT
+#define LUISANT //localisation BETA ou LUISANT
 
 
 #include <PubSubClient.h>

@@ -11,15 +11,44 @@ extern byte mode;
 extern float gauss;
 extern short calib1;
 extern short calib2;    
+String message = "";
+String message1 = "";
+String message2 = "";
+unsigned long publish_message = 0;
+void update_message() { //Alerne l'affichage message1 et message2
+    
+
+
+
+    if(message2 != "")
+    {
+    if (publish_message + 3000 < millis()) {
+        Serial.println("Updating message");
+        if(message == message1)
+        {
+        message = message2;
+    }
+        else
+        message = message1;
+
+        publish_message = millis();
+    }
+    }
+    else
+    message = message1; // Publie le message toutes les 10 secondes
+}
 
 void update_display()
 {
-
+//
+ 
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
-    display.println(WiFi.localIP());
+    update_message();
+    display.println(message);
+
 
     display.setTextSize(3);
 
@@ -107,3 +136,4 @@ for (int i = 0; i < 4; i++)
 
 display.display();
 }
+
