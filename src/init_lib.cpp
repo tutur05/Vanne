@@ -24,6 +24,7 @@ extern unsigned last_menu;
 extern Task t3;
 extern Adafruit_SSD1306 display;
 extern String message1;
+extern float gauss;
 
 Adafruit_BME280 bme; // définition de la variable globale
 
@@ -197,5 +198,11 @@ void check_wifi()
     IPAddress ip = WiFi.localIP();
     message1 = ip.toString().c_str();
   }
+
+}
+
+void ReadCapteur()
+{
+  gauss = analogRead(A0); // Lecture de la sonde magnétique
 
 }

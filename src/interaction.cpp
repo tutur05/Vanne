@@ -3,9 +3,29 @@
 #include "init_display.h"
 #include "moteur.h"
 #include <Arduino.h>
+#include "scheduler.h"
+extern byte mode;
+extern Task t5;
 
 void check_pin_button()
 {
+  if(mode == 3) // Si mode 3, On controle la sonde magnétique
+  {
+    if(!t5.isEnabled())
+    {
+      t5.enable();
+    }
+   
+  } 
+  else
+  {
+    if(t5.isEnabled())
+    {
+      t5.disable();
+    }
+  }
+
+
     if (digitalRead(PIN_PIR))
         last_pir = millis();
 
@@ -91,7 +111,6 @@ void check_pin_button()
 
     if (mode == 3) // Extinction des vannes lors du relachement du button OU trop proche
     {
-        //gauss = analogRead(A0); // Lecture de la sonde magnétique
 
         if (up == HIGH && lastUp == LOW) // Si on relache le bouton 
         {
@@ -105,12 +124,12 @@ void check_pin_button()
         }
 
 
-        if(digitalRead(PIN_VANNE_FERMER) && gauss > max_calibFermer)
+        if(digitalRead(PIN_VANNE_FERMER) && gauss >= max_calibFermer)
         {
             Serial.println("VanneFermer OFF car trop proche");
             vanneOff();
         }
-        if(digitalRead(PIN_VANNE_OUVRIR) && gauss < min_calibOuvrir)
+        if(digitalRead(PIN_VANNE_OUVRIR) && gauss <= min_calibOuvrir)
         {
             Serial.println("VanneOuvrir OFF car trop loin");
             vanneOff(); 

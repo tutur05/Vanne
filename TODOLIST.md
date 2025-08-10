@@ -21,3 +21,7 @@ Quand je ferma la vanne, la valeur monte
 555 Fermer (à 556 c'est trop haut, je m'arrête)
 519 Ouvrir ( à518 c'est trop bas je m'arrête)
 
+
+Améliorer detection butée (actuellement ouvre et seulement après vérifie si il peut ouvrir)
+Controle MQTT externe
+Améliorer lecture sonde via tache déporté

@@ -13,19 +13,14 @@ void init_moteur()
 
 void vanneF()
 {
-
-
   digitalWrite(PIN_VANNE_FERMER, HIGH);
-  digitalWrite(PIN_VANNE_OUVRIR, LOW);
-  
+  digitalWrite(PIN_VANNE_OUVRIR, LOW);  
 }
 
 void vanneO()
 {
-
   digitalWrite(PIN_VANNE_FERMER, LOW);
   digitalWrite(PIN_VANNE_OUVRIR, HIGH);
-
   }
 
 void vanneOff()

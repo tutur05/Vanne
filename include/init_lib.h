@@ -37,10 +37,9 @@ void t2Callback();
 void update_display();
 void check_wifi();
 void regul_therm();
+void ReadCapteur();
 
 
-
-void check_pin_button();
 
 
 
