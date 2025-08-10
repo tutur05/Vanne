@@ -18,7 +18,7 @@ void check_pin_button()
 
     // 0 MANUEL // 1 ECO // 2 AUTO (PIR) // 3 Moteur
     // Détection front descendant
-    if (up == LOW && lastUp == HIGH) // BTN UO PRESSE
+    if (up == LOW && lastUp == HIGH) // BTN UP PRESSE
     {
         Serial.println("up");
         getMqttClient().publish("VanneV1/button", "Up");
@@ -36,11 +36,11 @@ void check_pin_button()
         }
         else if (mode == 4)
         {
-            calib1 = calib1 + 1;
+            min_calibOuvrir = min_calibOuvrir + 1;
         }
         else if (mode == 5)
         {
-            calib2 = calib2 + 1;
+            max_calibFermer = max_calibFermer + 1;
         }
 
         update_display();
@@ -79,42 +79,43 @@ void check_pin_button()
         }
         else if (mode == 4)
         {
-            calib1 = calib1 - 1;
+            min_calibOuvrir = min_calibOuvrir - 1;
         }
         else if (mode == 5)
         {
-            calib2 = calib2 - 1;
+            max_calibFermer = max_calibFermer - 1;
         }
 
         update_display();
     }
 
-    if (mode == 3) // Extinction des vannes lors du relachement du button
+    if (mode == 3) // Extinction des vannes lors du relachement du button OU trop proche
     {
-        gauss = analogRead(A0); // Lecture de la sonde magnétique
+        //gauss = analogRead(A0); // Lecture de la sonde magnétique
 
         if (up == HIGH && lastUp == LOW) // Si on relache le bouton 
         {
             Serial.println("up relache");
             vanneOff();
         }
-
-        if (down == HIGH && lastDown == LOW ) // Si on relache le bouton 
+        if (down == HIGH && lastDown == LOW ) // Si on relache le bouton BAS
         {
             Serial.println("down relache");
             vanneOff();
         }
-        if(digitalRead(PIN_VANNE1) && gauss < calib1)
+
+
+        if(digitalRead(PIN_VANNE_FERMER) && gauss > max_calibFermer)
         {
-            Serial.println("Vanne1 OFF car trop proche");
+            Serial.println("VanneFermer OFF car trop proche");
             vanneOff();
         }
-        if(digitalRead(PIN_VANNE0) && gauss > calib2)
+        if(digitalRead(PIN_VANNE_OUVRIR) && gauss < min_calibOuvrir)
         {
-            Serial.println("Vanne0 OFF car trop loin");
+            Serial.println("VanneOuvrir OFF car trop loin");
             vanneOff(); 
         }
-    }
+                }
 
     lastSel = sel;
     lastUp = up;

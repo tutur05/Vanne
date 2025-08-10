@@ -9,8 +9,8 @@ extern float temperature;
 extern int consigne;
 extern byte mode;
 extern float gauss;
-extern short calib1;
-extern short calib2;    
+extern short min_calibOuvrir;
+extern short max_calibFermer;    
 String message = "";
 String message1 = "";
 String message2 = "";
@@ -41,7 +41,8 @@ void update_message() { //Alerne l'affichage message1 et message2
 void update_display()
 {
 //
- 
+         gauss = analogRead(A0); // Lecture de la sonde magnétique
+
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
@@ -59,10 +60,10 @@ case 1:
     display.println("16");
     break;
 case 4:
-    display.println(calib1);
+    display.println(min_calibOuvrir);
     break;
 case 5:
-    display.println(calib2);
+    display.println(max_calibFermer);
     break;
 default:
     display.print(consigne);
@@ -87,10 +88,10 @@ case 3:
     display.println("TEST");
     break;
 case 4:
-    display.println("CALIB1");
+    display.println("MaxFermer");
     break;
 case 5:
-    display.println("CALIB2");
+    display.println("MinOuvrir");
     break;
 }
 display.setTextSize(1);

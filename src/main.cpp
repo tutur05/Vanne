@@ -26,8 +26,8 @@ float humidity = 0;
 unsigned last_pir = 0;
 unsigned last_menu = 0;
 float gauss = 0;
-short calib1 = 540;
-short calib2 = 600;
+short max_calibFermer = 555;
+short min_calibOuvrir = 519;
 
 extern String message1;
 byte mode_max = 5 ; //Menu accessible

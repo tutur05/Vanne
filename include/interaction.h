@@ -8,8 +8,8 @@ extern unsigned last_pir ;
 extern int consigne;
 extern byte mode;
 extern float gauss;
-extern short calib1;
-extern short calib2;
+extern short max_calibFermer;
+extern short min_calibOuvrir;
 extern byte mode_max; //Menu prog  accessible
 void check_pin_button();
 
