@@ -6,6 +6,7 @@
 #include "scheduler.h"
 extern byte mode;
 extern Task t5;
+extern Task t6;
 
 void check_pin_button()
 {

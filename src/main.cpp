@@ -28,6 +28,9 @@ unsigned last_menu = 0;
 float gauss = 0;
 short max_calibFermer = 555;
 short min_calibOuvrir = 519;
+bool etat_vanne = false; // false = VANNE FERMEE, true = VANNE OUVERTE
+bool vanne_mouvO = false;
+bool vanne_mouvF = false; 
 
 extern String message1;
 byte mode_max = 5 ; //Menu accessible

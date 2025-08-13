@@ -1,8 +1,13 @@
 #include "moteur.h"
 #include "config.h"
+#include "scheduler.h"
 extern float gauss;
 extern short min_calibOuvrir;
 extern short max_calibFermer;
+extern bool vanne_mouvO;
+extern bool vanne_mouvF;
+extern Task t6;
+extern Task t7;
 void init_moteur()
 {
   pinMode(PIN_VANNE_FERMER, OUTPUT);
@@ -21,10 +26,41 @@ void vanneO()
 {
   digitalWrite(PIN_VANNE_FERMER, LOW);
   digitalWrite(PIN_VANNE_OUVRIR, HIGH);
-  }
+}
 
 void vanneOff()
 {
   digitalWrite(PIN_VANNE_FERMER, LOW);
   digitalWrite(PIN_VANNE_OUVRIR, LOW);
+}
+
+void checkMouvVanneF() //Fonction qui vérifie quand arrêter la vanne
+{
+  if (digitalRead(PIN_VANNE_FERMER) )
+  {
+  if(gauss >= max_calibFermer)
+  {
+    vanneOff();
+    vanne_mouvF = false;
+    t7.disable(); // On désactive la vérification de la vanne
+  }
+  else
+  vanne_mouvF = true;
+}
+
+}
+void checkMouvVanneO() //Fonction qui vérifie quand arrêter la vanne
+{
+  if (digitalRead(PIN_VANNE_OUVRIR) )
+  {
+  if(gauss <= min_calibOuvrir)
+  {
+    vanneOff();
+    vanne_mouvO = false;
+    t6.disable(); // On désactive la vérification de la vanne
+  }
+  else
+  vanne_mouvO = true;
+}
+
 }

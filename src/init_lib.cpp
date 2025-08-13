@@ -2,7 +2,7 @@
 #include "config.h"
 #include "scheduler.h"
 #include "init_display.h"
-
+#include "moteur.h"
 const char *mqtt_server = MQTT_SERVER;
 const int mqtt_port = 1883;
 const char *mqtt_user = "";
@@ -22,11 +22,13 @@ extern byte mode;
 extern unsigned last_pir;
 extern unsigned last_menu;
 extern Task t3;
+extern Task t6;
+extern Task t7;
 extern Adafruit_SSD1306 display;
 extern String message1;
 extern float gauss;
-
-Adafruit_BME280 bme; // définition de la variable globale
+extern bool etat_vanne; // false = VANNE FERMEE, true = VANNE OUVERTE
+Adafruit_BME280 bme;    // définition de la variable globale
 
 bool init_bme280()
 {
@@ -93,9 +95,6 @@ void check_connection()
 {
   check_wifi();
 
-  temperature = bme.readTemperature();
-  humidity = bme.readHumidity();
-
   if (!getMqttClient().connected())
   {
     mqtt_reconnect();
@@ -112,19 +111,27 @@ void holdMQTT_Online() // maintient de liaison MQTT
   getMqttClient().loop(); // maintient le mqtt en ligne (1s max entre 2 loop)
 }
 
-void regul_therm()
+void regul_therm() // régulation de la vanne + lecture sonde
 {
+  temperature = bme.readTemperature();
+  humidity = bme.readHumidity();
 
   // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
   if (mode == 0)
   {
     if (consigne > temperature)
     {
+
       // VANNE ON
+      t6.enable(); // On active la desaction auto du moteur de la vanne
+      vanneO();
     }
-    else
+    else // Il faut fermer la vanne
     {
+
       // VANNE OFF
+      vanneF();
+      t7.enable(); // On active  la desaction auto du moteur de la vanne
     }
   }
   if (mode == 1)
@@ -133,10 +140,14 @@ void regul_therm()
     if (16 > temperature)
     {
       // VANNE ON
+      t6.enable(); // On active la desaction auto du moteur de la vanne
+      vanneO();
     }
     else
     {
       // VANNE OFF
+      vanneF();
+      t7.enable(); // On active  la desaction auto du moteur de la vanne
     }
   }
   if (mode == 2)
@@ -145,11 +156,17 @@ void regul_therm()
     {
       if (consigne > temperature)
       {
-        // VANNE ON
+        if (!etat_vanne)
+        {
+          // VANNE ON
+        }
       }
       else
       {
-        // VANNE OFF
+        if (etat_vanne)
+        {
+          // VANNE OFF
+        }
       }
     }
     else
@@ -198,11 +215,9 @@ void check_wifi()
     IPAddress ip = WiFi.localIP();
     message1 = ip.toString().c_str();
   }
-
 }
 
 void ReadCapteur()
 {
   gauss = analogRead(A0); // Lecture de la sonde magnétique
-
 }

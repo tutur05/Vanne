@@ -24,4 +24,4 @@ Quand je ferma la vanne, la valeur monte
 
 Améliorer detection butée (actuellement ouvre et seulement après vérifie si il peut ouvrir)
 Controle MQTT externe
-Améliorer lecture sonde via tache déporté
+
