@@ -3,13 +3,15 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <SPI.h>
+#include <Preferences.h>
 
 #include "init_lib.h"
 #include "init_display.h"
 #include "moteur.h"
 #include "config.h"
 #include "interaction.h"
-#include "scheduler.h" 
+#include "scheduler.h"
+
 
 
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
@@ -26,26 +28,31 @@ float humidity = 0;
 unsigned last_pir = 0;
 unsigned last_menu = 0;
 float gauss = 0;
-short max_calibFermer = 555;
-short min_calibOuvrir = 519;
+short max_calibFermer ;
+short min_calibOuvrir;
 bool etat_vanne = false; // false = VANNE FERMEE, true = VANNE OUVERTE
 bool vanne_mouvO = false;
 bool vanne_mouvF = false; 
 
 extern String message1;
 byte mode_max = 5 ; //Menu accessible
-
+Preferences backup;
 
 
 void setup()
 {
 message1 = "Connecting";
-
+ 
     if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   {
     Serial.println(F("SSD1306 allocation failed"));
 
   }
+
+   backup.begin("mon-app", false); // false = mode lecture/écriture
+  min_calibOuvrir = backup.getShort("min_calibOuvrir", 555);
+  max_calibFermer = backup.getShort("max_calibFermer", 519);
+    backup.end(); // Ferme l'accès aux préférences
 
   update_display();
   pinMode(PIN_PIR, INPUT);

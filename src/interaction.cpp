@@ -4,10 +4,11 @@
 #include "moteur.h"
 #include <Arduino.h>
 #include "scheduler.h"
+#include <Preferences.h>
 extern byte mode;
 extern Task t5;
 extern Task t6;
-
+extern Preferences backup;  
 void check_pin_button()
 {
   if(mode == 3) // Si mode 3, On controle la sonde magnétique
@@ -58,10 +59,13 @@ void check_pin_button()
         else if (mode == 4)
         {
             min_calibOuvrir = min_calibOuvrir + 1;
+            backup.putShort("min_calibOuvrir", min_calibOuvrir);
+            
         }
         else if (mode == 5)
         {
             max_calibFermer = max_calibFermer + 1;
+            backup.putShort("max_calibFermer", max_calibFermer);
         }
 
         update_display();
@@ -101,10 +105,13 @@ void check_pin_button()
         else if (mode == 4)
         {
             min_calibOuvrir = min_calibOuvrir - 1;
+            backup.putShort("min_calibOuvrir", min_calibOuvrir);
+
         }
         else if (mode == 5)
         {
             max_calibFermer = max_calibFermer - 1;
+            backup.putShort("max_calibFermer", max_calibFermer);
         }
 
         update_display();
