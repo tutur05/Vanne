@@ -89,7 +89,7 @@ PubSubClient &getMqttClient()
   return client;
 }
 
-void t1Callback()
+void check_connection()
 {
   check_wifi();
 
@@ -107,7 +107,7 @@ void t1Callback()
   client.publish("VanneV1/timeout", String(mq).c_str());
 }
 
-void t2Callback() // maintient de liaison MQTT
+void holdMQTT_Online() // maintient de liaison MQTT
 {
   getMqttClient().loop(); // maintient le mqtt en ligne (1s max entre 2 loop)
 }

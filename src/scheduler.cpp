@@ -13,18 +13,18 @@
 Scheduler runner;
 
 // Déclarations des fonctions de rappel qui sont définies ailleurs.
-void t1Callback();
-void t2Callback();
+void check_connection();
+void holdMQTT_Online();
 void regul_therm();
 void update_display();
 void ReadCapteur(); // Exemple d'une tâche supplémentaire
 
 // Définition des tâches.
-Task t1(30000, TASK_FOREVER, &t1Callback);
-Task t2(1000, TASK_FOREVER, &t2Callback);
+Task t1(30000, TASK_FOREVER, &check_connection);
+Task t2(1000, TASK_FOREVER, &holdMQTT_Online);
 Task t3(2000, TASK_FOREVER, &update_display);
 Task t4(5000, TASK_FOREVER, &regul_therm);
-Task t5(200, TASK_FOREVER, &ReadCapteur); // Exemple d'une tâche supplémentaire
+Task t5(200, TASK_FOREVER, &ReadCapteur); 
 
 // Définition de la fonction d'initialisation.
 void init_scheduler()

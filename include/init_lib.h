@@ -32,8 +32,8 @@ PubSubClient& getMqttClient();
 
 
 
-void t1Callback();
-void t2Callback();
+void check_connection();
+void holdMQTT_Online();
 void update_display();
 void check_wifi();
 void regul_therm();
