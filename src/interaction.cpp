@@ -8,25 +8,23 @@
 extern byte mode;
 extern Task t5;
 extern Task t6;
-extern Preferences backup;  
+extern Preferences backup;
 void check_pin_button()
 {
-  if(mode == 3) // Si mode 3, On controle la sonde magnétique
-  {
-    if(!t5.isEnabled())
+    if (mode == 3) // Si mode 3, On controle la sonde magnétique
     {
-      t5.enable();
+        if (!t5.isEnabled())
+        {
+            t5.enable();
+        }
     }
-   
-  } 
-  else
-  {
-    if(t5.isEnabled())
+    else
     {
-      t5.disable();
+        if (t5.isEnabled())
+        {
+            t5.disable();
+        }
     }
-  }
-
 
     if (digitalRead(PIN_PIR))
         last_pir = millis();
@@ -54,18 +52,20 @@ void check_pin_button()
 
             vanneO();
             Serial.println("Vanne1 ON");
-              
         }
         else if (mode == 4)
         {
+            backup.begin("mon-app", false); // false = mode lecture/écriture
             min_calibOuvrir = min_calibOuvrir + 1;
             backup.putShort("min_calibOuvrir", min_calibOuvrir);
-            
+            backup.end(); // Ferme l'accès aux préférences
         }
         else if (mode == 5)
         {
+            backup.begin("mon-app", false); // false = mode lecture/écriture
             max_calibFermer = max_calibFermer + 1;
             backup.putShort("max_calibFermer", max_calibFermer);
+            backup.end(); // Ferme l'accès aux préférences
         }
 
         update_display();
@@ -94,24 +94,29 @@ void check_pin_button()
         getMqttClient().publish("VanneV1/button", "down");
         if (mode == 0)
         {
+
             consigne = consigne - 1;
         }
         else if (mode == 3)
         {
 
             vanneF();
-            
         }
         else if (mode == 4)
         {
+            backup.begin("mon-app", false); // false = mode lecture/écriture
+
             min_calibOuvrir = min_calibOuvrir - 1;
             backup.putShort("min_calibOuvrir", min_calibOuvrir);
-
+            backup.end(); // Ferme l'accès aux préférences
         }
         else if (mode == 5)
         {
+            backup.begin("mon-app", false); // false = mode lecture/écriture
+
             max_calibFermer = max_calibFermer - 1;
             backup.putShort("max_calibFermer", max_calibFermer);
+            backup.end(); // Ferme l'accès aux préférences
         }
 
         update_display();
@@ -120,29 +125,28 @@ void check_pin_button()
     if (mode == 3) // Extinction des vannes lors du relachement du button OU trop proche
     {
 
-        if (up == HIGH && lastUp == LOW) // Si on relache le bouton 
+        if (up == HIGH && lastUp == LOW) // Si on relache le bouton
         {
             Serial.println("up relache");
             vanneOff();
         }
-        if (down == HIGH && lastDown == LOW ) // Si on relache le bouton BAS
+        if (down == HIGH && lastDown == LOW) // Si on relache le bouton BAS
         {
             Serial.println("down relache");
             vanneOff();
         }
 
-
-        if(digitalRead(PIN_VANNE_FERMER) && gauss >= max_calibFermer)
+        if (digitalRead(PIN_VANNE_FERMER) && gauss >= max_calibFermer)
         {
             Serial.println("VanneFermer OFF car trop proche");
             vanneOff();
         }
-        if(digitalRead(PIN_VANNE_OUVRIR) && gauss <= min_calibOuvrir)
+        if (digitalRead(PIN_VANNE_OUVRIR) && gauss <= min_calibOuvrir)
         {
             Serial.println("VanneOuvrir OFF car trop loin");
-            vanneOff(); 
+            vanneOff();
         }
-                }
+    }
 
     lastSel = sel;
     lastUp = up;

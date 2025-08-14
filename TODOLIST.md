@@ -1,5 +1,5 @@
 - Serial Deporte via MQTT
-Ecran 
+Ecran Extinction 
 Test fonctionnement perte wifi 
 PIR A définir
 Améliorer MQTT reconnexio n(actuellement trop frequent et bloquant si serveur MQTT down) => Faire une connexion a chaque envoie plutot que de garder la liaison ? => PB dans ce cas pour recevoir les ordres ? Ou alors envoyer des msg avec une persistance (possible via "messageretained") 
