@@ -42,20 +42,20 @@ void init_OTA()
   // ArduinoOTA.setPort(8266);
   // No authentication by default
   ArduinoOTA.setPassword((const char *)"tototititata28");
-  ArduinoOTA.onStart([]()
-                     { Serial.println("Start"); });
-  ArduinoOTA.onEnd([]()
-                   { Serial.println("\nEnd"); });
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total)
-                        { Serial.printf("Progress: %u%%\r", (progress / (total / 100))); });
-  ArduinoOTA.onError([](ota_error_t error)
-                     {
-    Serial.printf("Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-    else if (error == OTA_END_ERROR) Serial.println("End Failed"); });
+ /*/ ArduinoOTA.onStart([]()
+   //                  { // Serial.println("Start"); });
+  //ArduinoOTA.onEnd([]()
+     //              { // Serial.println("\nEnd"); });
+  //ArduinoOTA.onProgress([](unsigned int progress, unsigned int total)
+       //                 { // Serial.printf("Progress: %u%%\r", (progress / (total / 100))); });
+  //ArduinoOTA.onError([](ota_error_t error)
+         //            {
+    // Serial.printf("Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) // Serial.println("Auth Failed");
+    else if (error == OTA_BEGIN_ERROR) // Serial.println("Begin Failed");
+    else if (error == OTA_CONNECT_ERROR) // Serial.println("Connect Failed");
+    else if (error == OTA_RECEIVE_ERROR) // Serial.println("Receive Failed");
+    else if (error == OTA_END_ERROR) // Serial.println("End Failed"); });*/
   ArduinoOTA.begin();
 }
 
@@ -68,18 +68,18 @@ bool mqtt_reconnect()
 {
   if (!client.connected())
   {
-    Serial.print("Attempting MQTT connection...");
+    // Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP8266Client"))
     {
-      Serial.println("connected");
+      // Serial.println("connected");
       client.publish("VanneV1/topic", "Hello from ESP8266");
       return true;
     }
     else
     {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
+      // Serial.print("failed, rc=");
+      // Serial.print(client.state());
+      // Serial.println(" try again in 5 seconds");
       return false;
     }
   }
@@ -192,21 +192,21 @@ void check_wifi()
       WiFi.begin(ssid2, password2);
       if (WiFi.waitForConnectResult() != WL_CONNECTED)
       {
-        Serial.println("WiFi backup connection failed");
+        // Serial.println("WiFi backup connection failed");
         return;
       }
       else
       {
-        Serial.print("IP address: ");
-        Serial.println(WiFi.localIP());
+        // Serial.print("IP address: ");
+        // Serial.println(WiFi.localIP());
         digitalWrite(LED, HIGH);
       }
     }
     else
     {
-      Serial.println("WiFi1 connected");
-      Serial.print("IP address: ");
-      Serial.println(WiFi.localIP());
+      // Serial.println("WiFi1 connected");
+      // Serial.print("IP address: ");
+      // Serial.println(WiFi.localIP());
       digitalWrite(LED, HIGH);
     }
   }

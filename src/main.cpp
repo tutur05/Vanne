@@ -41,11 +41,17 @@ Preferences backup;
 
 void setup()
 {
-message1 = "Connecting";
+    init_moteur();
+ 
+  //pinMode(15,OUTPUT);
+
+//analogWrite(15,255);
+
+  message1 = "Connecting";
  
     if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   {
-    Serial.println(F("SSD1306 allocation failed"));
+    // Serial.println(F("SSD1306 allocation failed"));
 
   }
 
@@ -65,7 +71,7 @@ message1 = "Connecting";
   init_OTA();
 
 
-  Serial.begin(115200);
+  // Serial.begin(115200);
   pinMode(LED, OUTPUT);
 
   check_wifi();
@@ -74,7 +80,6 @@ message1 = "Connecting";
   mqtt_reconnect();
 
 
-  init_moteur();
         init_scheduler();
 }
 

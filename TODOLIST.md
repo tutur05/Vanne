@@ -22,6 +22,6 @@ Quand je ferma la vanne, la valeur monte
 519 Ouvrir ( à518 c'est trop bas je m'arrête)
 
 
-Améliorer detection butée (actuellement ouvre et seulement après vérifie si il peut ouvrir)
 Controle MQTT externe
-
+Menu TEST avec afficheur de la course de la sonde ?
+Démarrer regul therm que si la vanne n'est pas hors course

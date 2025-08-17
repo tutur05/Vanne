@@ -8,6 +8,7 @@ extern bool vanne_mouvO;
 extern bool vanne_mouvF;
 extern Task t6;
 extern Task t7;
+extern String message2;
 void init_moteur()
 {
   pinMode(PIN_VANNE_FERMER, OUTPUT);
@@ -43,6 +44,7 @@ void checkMouvVanneF() //Fonction qui vérifie quand arrêter la vanne
     vanneOff();
     vanne_mouvF = false;
     t7.disable(); // On désactive la vérification de la vanne
+    message2 = "checkVF";
   }
   else
   vanne_mouvF = true;
@@ -57,6 +59,7 @@ void checkMouvVanneO() //Fonction qui vérifie quand arrêter la vanne
   {
     vanneOff();
     vanne_mouvO = false;
+    message2 = "checkVO";
     t6.disable(); // On désactive la vérification de la vanne
   }
   else

@@ -6,17 +6,33 @@
 #include "scheduler.h"
 #include <Preferences.h>
 extern byte mode;
+extern Task t3;
+
 extern Task t5;
 extern Task t6;
 extern Preferences backup;
+extern String message2;
 void check_pin_button()
 {
+    if(mode <= 2) //Désactivation du thermostat le temps des tests
+    {    
+    if (t3.isEnabled()) 
+        {            
+            t3.disable();
+            vanneOff();
+        }
+    }
+    else
+    t3.enable();
+
     if (mode == 3) // Si mode 3, On controle la sonde magnétique
     {
         if (!t5.isEnabled())
         {
             t5.enable();
         }
+
+
     }
     else
     {
@@ -40,7 +56,7 @@ void check_pin_button()
     // Détection front descendant
     if (up == LOW && lastUp == HIGH) // BTN UP PRESSE
     {
-        Serial.println("up");
+        // Serial.println("up");
         getMqttClient().publish("VanneV1/button", "Up");
 
         if (mode == 0)
@@ -51,7 +67,7 @@ void check_pin_button()
         {
 
             vanneO();
-            Serial.println("Vanne1 ON");
+            // Serial.println("Vanne1 ON");
         }
         else if (mode == 4)
         {
@@ -73,7 +89,7 @@ void check_pin_button()
 
     if (sel == LOW && lastSel == HIGH) // Bacule du mode via btn milieu
     {
-        Serial.println("sel");
+        // Serial.println("sel");
 
         getMqttClient().publish("VanneV1/button", "sel");
 
@@ -89,17 +105,15 @@ void check_pin_button()
 
     if (down == LOW && lastDown == HIGH) // BTN DOWN PRESSE
     {
-        Serial.println("down");
+        // Serial.println("down");
 
         getMqttClient().publish("VanneV1/button", "down");
         if (mode == 0)
         {
-
             consigne = consigne - 1;
         }
         else if (mode == 3)
         {
-
             vanneF();
         }
         else if (mode == 4)
@@ -127,24 +141,26 @@ void check_pin_button()
 
         if (up == HIGH && lastUp == LOW) // Si on relache le bouton
         {
-            Serial.println("up relache");
+            // Serial.println("up relache");
             vanneOff();
         }
         if (down == HIGH && lastDown == LOW) // Si on relache le bouton BAS
         {
-            Serial.println("down relache");
+            // Serial.println("down relache");
             vanneOff();
         }
 
         if (digitalRead(PIN_VANNE_FERMER) && gauss >= max_calibFermer)
         {
-            Serial.println("VanneFermer OFF car trop proche");
+            // Serial.println("VanneFermer OFF car trop proche");
             vanneOff();
+            message2= "MaxFermer";
         }
         if (digitalRead(PIN_VANNE_OUVRIR) && gauss <= min_calibOuvrir)
         {
-            Serial.println("VanneOuvrir OFF car trop loin");
+            // Serial.println("VanneOuvrir OFF car trop loin");
             vanneOff();
+            message2= "MinOuvert";
         }
     }
 
