@@ -25,7 +25,6 @@ const char *ssid = SSID1;
 const char *password = PASSWIFI1;
 float temperature = 0;
 float humidity = 0;
-unsigned last_pir = 0;
 unsigned last_menu = 0;
 float gauss = 0;
 short max_calibFermer ;
@@ -34,6 +33,12 @@ bool etat_vanne = false; // false = VANNE FERMEE, true = VANNE OUVERTE
 bool vanne_mouvO = false;
 bool vanne_mouvF = false; 
 
+unsigned long last_pir = 0;
+
+const unsigned long DELAI_EXTINCTION = 20000; // 10 secondes en millisecondes
+
+// Variable d'état pour savoir si l'écran est allumé ou non
+bool powerLCD = true; 
 extern String message1;
 byte mode_max = 5 ; //Menu accessible
 Preferences backup;
@@ -43,9 +48,9 @@ void setup()
 {
     init_moteur();
  
-  //pinMode(15,OUTPUT);
+  pinMode(15,OUTPUT);
 
-//analogWrite(15,255);
+  analogWrite(15,125);
 
   message1 = "Connecting";
  
@@ -61,6 +66,8 @@ void setup()
     backup.end(); // Ferme l'accès aux préférences
 
   update_display();
+
+
   pinMode(PIN_PIR, INPUT);
   pinMode(PIN_BTNUP, INPUT_PULLUP);
   pinMode(PIN_BTNMID, INPUT_PULLUP);
@@ -72,7 +79,7 @@ void setup()
 
 
   // Serial.begin(115200);
-  pinMode(LED, OUTPUT);
+  //pinMode(LED, OUTPUT);
 
   check_wifi();
 
@@ -93,6 +100,17 @@ void loop()
   else
  mode_max = 2; //Menu accessible seulement les 5 minutes suivant le boot
 
-
+if (millis() - last_pir > DELAI_EXTINCTION) {
+  if (powerLCD) {
+    display.ssd1306_command(SSD1306_DISPLAYOFF); // ...on l'éteint
+    powerLCD = false; // ...et on mémorise son nouvel état
+  }
+} 
+else {
+  if (!powerLCD) {
+    display.ssd1306_command(SSD1306_DISPLAYON); // ...on le rallume
+    powerLCD = true; // ...et on mémorise son nouvel état
+  }
+}
  check_pin_button();
 }

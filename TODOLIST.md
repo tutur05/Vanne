@@ -17,7 +17,7 @@ PIR GPIO13 D7
 
 
 CALIB OUVRIR FERMER SALLE POLY : O => 519 F =>
-Quand je ferma la vanne, la valeur monte 
+Quand je ferma la vanne, la valeur diminue 
 555 Fermer (à 556 c'est trop haut, je m'arrête)
 519 Ouvrir ( à518 c'est trop bas je m'arrête)
 
@@ -25,3 +25,5 @@ Quand je ferma la vanne, la valeur monte
 Controle MQTT externe
 Menu TEST avec afficheur de la course de la sonde ?
 Démarrer regul therm que si la vanne n'est pas hors course
+Rajouter verif que Min et MAx ne peuvent pas être inversé (Min ouvrir doit être plus petit que MaxFermer)
+BUG => TEST FONCTIONNE MAIS PAS REGUL THERM ; VERIFIER LES <<>>

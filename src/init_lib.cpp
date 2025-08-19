@@ -19,7 +19,7 @@ extern const char *ssid2;
 extern const char *password2;
 extern int consigne;
 extern byte mode;
-extern unsigned last_pir;
+extern unsigned long last_pir;
 extern unsigned last_menu;
 extern Task t3;
 extern Task t6;
@@ -195,20 +195,9 @@ void check_wifi()
         // Serial.println("WiFi backup connection failed");
         return;
       }
-      else
-      {
-        // Serial.print("IP address: ");
-        // Serial.println(WiFi.localIP());
-        digitalWrite(LED, HIGH);
-      }
+
     }
-    else
-    {
-      // Serial.println("WiFi1 connected");
-      // Serial.print("IP address: ");
-      // Serial.println(WiFi.localIP());
-      digitalWrite(LED, HIGH);
-    }
+
   }
   else
   {

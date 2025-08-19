@@ -4,7 +4,7 @@
 #include <PubSubClient.h>
 
 PubSubClient& getMqttClient();
-extern unsigned last_pir ;
+extern unsigned long last_pir ;
 extern int consigne;
 extern byte mode;
 extern float gauss;

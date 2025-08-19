@@ -4,7 +4,7 @@
 extern Adafruit_SSD1306 display;
 extern int consigne;
 extern byte mode;
-extern unsigned last_pir;
+extern unsigned long last_pir;
 extern unsigned last_menu;
 extern float temperature;
 extern int consigne;
@@ -12,12 +12,14 @@ extern byte mode;
 extern float gauss;
 extern short min_calibOuvrir;
 extern short max_calibFermer;
+extern byte mode_max;
 String message = "";
 String message1 = "";
 String message2 = "";
 unsigned long publish_message = 0;
 const unsigned long UPDATE_INTERVAL = 3000; // 3 secondes
 byte count = 0;
+
 void update_message()
 {
     
@@ -115,8 +117,9 @@ void update_display()
         display.println("MaxFermer");
         break;
     }
+    if( mode_max != 2)
+    {
     display.setTextSize(1);
-
     display.print("+O ");
     display.print(min_calibOuvrir);
     display.print("<");
@@ -124,7 +127,7 @@ void update_display()
     display.print(">");
     display.print(max_calibFermer);
     display.println(" -F");
-
+    }
     display.print(temperature);
     display.print((char)247); // °
     display.print("C - ");

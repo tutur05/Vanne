@@ -6,24 +6,27 @@
 #include "scheduler.h"
 #include <Preferences.h>
 extern byte mode;
-extern Task t3;
+extern Task t4;
 
 extern Task t5;
 extern Task t6;
 extern Preferences backup;
 extern String message2;
+extern bool powerLCD;
+extern unsigned long last_pir;
+
 void check_pin_button()
 {
-    if(mode <= 2) //Désactivation du thermostat le temps des tests
-    {    
-    if (t3.isEnabled()) 
-        {            
-            t3.disable();
+    if (mode <= 2) // Désactivation du thermostat le temps des tests
+    {
+        if (t4.isEnabled())
+        {
+            t4.disable();
             vanneOff();
         }
     }
     else
-    t3.enable();
+        t4.enable();
 
     if (mode == 3) // Si mode 3, On controle la sonde magnétique
     {
@@ -31,8 +34,6 @@ void check_pin_button()
         {
             t5.enable();
         }
-
-
     }
     else
     {
@@ -42,8 +43,8 @@ void check_pin_button()
         }
     }
 
-    if (digitalRead(PIN_PIR))
-        last_pir = millis();
+    //if (digitalRead(PIN_PIR))
+    //    last_pir = millis();
 
     static bool lastUp = HIGH, lastSel = HIGH, lastDown = HIGH;
 
@@ -51,6 +52,15 @@ void check_pin_button()
     bool up = digitalRead(PIN_BTNUP);
     bool sel = digitalRead(PIN_BTNMID);
     bool down = digitalRead(PIN_BTNDOWN);
+
+    if (up == LOW || sel == LOW || down == LOW)
+    {
+        last_pir = millis();
+    }
+
+    if(powerLCD) // Si écran allumé
+    {
+
 
     // 0 MANUEL // 1 ECO // 2 AUTO (PIR) // 3 Moteur
     // Détection front descendant
@@ -89,7 +99,6 @@ void check_pin_button()
 
     if (sel == LOW && lastSel == HIGH) // Bacule du mode via btn milieu
     {
-        // Serial.println("sel");
 
         getMqttClient().publish("VanneV1/button", "sel");
 
@@ -154,17 +163,23 @@ void check_pin_button()
         {
             // Serial.println("VanneFermer OFF car trop proche");
             vanneOff();
-            message2= "MaxFermer";
+            message2 = "MaxFermer";
         }
         if (digitalRead(PIN_VANNE_OUVRIR) && gauss <= min_calibOuvrir)
         {
             // Serial.println("VanneOuvrir OFF car trop loin");
             vanneOff();
-            message2= "MinOuvert";
+            message2 = "MinOuvert";
         }
     }
 
     lastSel = sel;
     lastUp = up;
     lastDown = down;
+}
+
+
+
+
+
 }
