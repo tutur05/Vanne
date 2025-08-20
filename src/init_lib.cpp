@@ -124,13 +124,13 @@ void regul_therm() // régulation de la vanne + lecture sonde
 
       // VANNE ON
       t6.enable(); // On active la desaction auto du moteur de la vanne
-      vanneO();
+      //vanneO();
     }
     else // Il faut fermer la vanne
     {
 
       // VANNE OFF
-      vanneF();
+      //vanneF();
       t7.enable(); // On active  la desaction auto du moteur de la vanne
     }
   }
@@ -141,12 +141,12 @@ void regul_therm() // régulation de la vanne + lecture sonde
     {
       // VANNE ON
       t6.enable(); // On active la desaction auto du moteur de la vanne
-      vanneO();
+      //vanneO();
     }
     else
     {
       // VANNE OFF
-      vanneF();
+      //vanneF();
       t7.enable(); // On active  la desaction auto du moteur de la vanne
     }
   }

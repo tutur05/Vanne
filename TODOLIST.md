@@ -17,7 +17,7 @@ PIR GPIO13 D7
 
 
 CALIB OUVRIR FERMER SALLE POLY : O => 519 F =>
-Quand je ferma la vanne, la valeur diminue 
+Quand je ferma la vanne, la valeur  
 555 Fermer (à 556 c'est trop haut, je m'arrête)
 519 Ouvrir ( à518 c'est trop bas je m'arrête)
 

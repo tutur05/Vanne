@@ -35,7 +35,7 @@ bool vanne_mouvF = false;
 
 unsigned long last_pir = 0;
 
-const unsigned long DELAI_EXTINCTION = 20000; // 10 secondes en millisecondes
+const unsigned long DELAI_EXTINCTION = 60000; // 10 secondes en millisecondes
 
 // Variable d'état pour savoir si l'écran est allumé ou non
 bool powerLCD = true; 
@@ -61,7 +61,7 @@ void setup()
   }
 
    backup.begin("mon-app", false); // false = mode lecture/écriture
-  min_calibOuvrir = backup.getShort("min_calibOuvrir", 555);
+  min_calibOuvrir = backup.getShort("min_calibOuvrir", 500);
   max_calibFermer = backup.getShort("max_calibFermer", 519);
     backup.end(); // Ferme l'accès aux préférences
 
@@ -92,6 +92,7 @@ void setup()
 
 void loop()
 {
+//            vanneOff();
 
   runner.execute();
 

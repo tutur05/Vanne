@@ -37,33 +37,35 @@ void vanneOff()
 
 void checkMouvVanneF() //Fonction qui vérifie quand arrêter la vanne
 {
-  if (digitalRead(PIN_VANNE_FERMER) )
-  {
+  if(t7.isFirstIteration())
+  vanneF();
+
   if(gauss >= max_calibFermer)
   {
     vanneOff();
     vanne_mouvF = false;
+    message2 = "checkVF";    
+  
     t7.disable(); // On désactive la vérification de la vanne
-    message2 = "checkVF";
   }
   else
   vanne_mouvF = true;
-}
 
 }
 void checkMouvVanneO() //Fonction qui vérifie quand arrêter la vanne
 {
-  if (digitalRead(PIN_VANNE_OUVRIR) )
-  {
+  if(t6.isFirstIteration())
+  vanneO();
+
   if(gauss <= min_calibOuvrir)
   {
     vanneOff();
     vanne_mouvO = false;
-    message2 = "checkVO";
+    message2 = "checkVO";    
+  
     t6.disable(); // On désactive la vérification de la vanne
   }
   else
   vanne_mouvO = true;
 }
 
-}

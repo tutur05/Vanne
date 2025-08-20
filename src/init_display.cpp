@@ -1,6 +1,6 @@
 #include "init_display.h"
 #include "config.h"
-
+#include "scheduler.h"
 extern Adafruit_SSD1306 display;
 extern int consigne;
 extern byte mode;
@@ -17,35 +17,36 @@ String message = "";
 String message1 = "";
 String message2 = "";
 unsigned long publish_message = 0;
-const unsigned long UPDATE_INTERVAL = 3000; // 3 secondes
+const unsigned long UPDATE_INTERVAL = 2000; 
 byte count = 0;
+extern Task t4;
+extern Task t6;
+extern Task t7;
 
 void update_message()
 {
-    
+
     // On exécute l'alternance seulement si message2 n'est pas vide
     if (message2 != "")
     {
         // Est-ce que 3 secondes se sont écoulées depuis la dernière mise à jour ?
         if (millis() - publish_message >= UPDATE_INTERVAL)
         {
-            // Serial.println("Mise à jour du message...");
 
             // On alterne le message
             if (message == message1)
             {
-                count = count +1;
+                count = count + 1;
                 message = message2;
-
             }
             else
             {
                 message = message1;
-                if(count >3 ) {
-                count = 0;
-                message2 = "";}
-                
-                
+                if (count > 2)
+                {
+                    count = 0;
+                    message2 = "";
+                }
             }
 
             // On met à jour le moment de la dernière publication
@@ -91,7 +92,6 @@ void update_display()
         display.print((char)247); // °
         display.println("C");
 
-        
         break;
     }
     display.setTextSize(2);
@@ -117,24 +117,28 @@ void update_display()
         display.println("MaxFermer");
         break;
     }
-    if( mode_max != 2)
+    if (mode_max != 2)
     {
-    display.setTextSize(1);
-    display.print("+O ");
-    display.print(min_calibOuvrir);
-    display.print("<");
-    display.print(roundf(gauss));
-    display.print(">");
-    display.print(max_calibFermer);
-    display.println(" -F");
+        display.setTextSize(1);
+        display.print("+O ");
+        display.print(min_calibOuvrir);
+        display.print("<");
+        display.print(roundf(gauss));
+        display.print(">");
+        display.print(max_calibFermer);
+        display.println(" -F");
     }
     display.print(temperature);
     display.print((char)247); // °
     display.print("C - ");
-            if (digitalRead(PIN_VANNE_FERMER))
-            display.print("F");
-        if (digitalRead(PIN_VANNE_OUVRIR))
-            display.print("O");
+    if (digitalRead(PIN_VANNE_FERMER))
+        display.print("F");
+    if (digitalRead(PIN_VANNE_OUVRIR))
+        display.print("O");            
+    if (t6.isEnabled())
+        display.print("cO");
+    if (t7.isEnabled())
+        display.print("cF");
 
     int32_t rssi = WiFi.RSSI(); // Valeur RSSI (en dBm)
 
