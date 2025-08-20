@@ -25,5 +25,3 @@ Quand je ferma la vanne, la valeur
 Controle MQTT externe
 Menu TEST avec afficheur de la course de la sonde ?
 Démarrer regul therm que si la vanne n'est pas hors course
-Rajouter verif que Min et MAx ne peuvent pas être inversé (Min ouvrir doit être plus petit que MaxFermer)
-BUG => TEST FONCTIONNE MAIS PAS REGUL THERM ; VERIFIER LES <<>>

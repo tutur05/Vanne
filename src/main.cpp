@@ -12,8 +12,6 @@
 #include "interaction.h"
 #include "scheduler.h"
 
-
-
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 
 byte mode = 0; // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
@@ -27,91 +25,105 @@ float temperature = 0;
 float humidity = 0;
 unsigned last_menu = 0;
 float gauss = 0;
-short max_calibFermer ;
+short max_calibFermer;
 short min_calibOuvrir;
 bool etat_vanne = false; // false = VANNE FERMEE, true = VANNE OUVERTE
 bool vanne_mouvO = false;
-bool vanne_mouvF = false; 
+bool vanne_mouvF = false;
 
 unsigned long last_pir = 0;
 
 const unsigned long DELAI_EXTINCTION = 60000; // 10 secondes en millisecondes
 
 // Variable d'état pour savoir si l'écran est allumé ou non
-bool powerLCD = true; 
+bool powerLCD = true;
 extern String message1;
-byte mode_max = 5 ; //Menu accessible
+byte mode_max = 5; // Menu accessible
 Preferences backup;
-
+extern Task t4; // Tâche de régulation du thermostat
 
 void setup()
 {
-    init_moteur();
- 
-  pinMode(15,OUTPUT);
+  init_moteur();
 
-  analogWrite(15,125);
+  pinMode(15, OUTPUT);
+
+  analogWrite(15, 125);
 
   message1 = "Connecting";
- 
-    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   {
     // Serial.println(F("SSD1306 allocation failed"));
-
   }
 
-   backup.begin("mon-app", false); // false = mode lecture/écriture
+  backup.begin("mon-app", false); // false = mode lecture/écriture
   min_calibOuvrir = backup.getShort("min_calibOuvrir", 500);
   max_calibFermer = backup.getShort("max_calibFermer", 519);
-    backup.end(); // Ferme l'accès aux préférences
+  backup.end(); // Ferme l'accès aux préférences
 
   update_display();
-
 
   pinMode(PIN_PIR, INPUT);
   pinMode(PIN_BTNUP, INPUT_PULLUP);
   pinMode(PIN_BTNMID, INPUT_PULLUP);
-  pinMode(PIN_BTNDOWN,INPUT_PULLUP);
+  pinMode(PIN_BTNDOWN, INPUT_PULLUP);
   pinMode(A0, INPUT); // Pin A0 pour la sonde magnetique
   init_bme280();
 
   init_OTA();
 
-
   // Serial.begin(115200);
-  //pinMode(LED, OUTPUT);
+  // pinMode(LED, OUTPUT);
 
   check_wifi();
 
   mqtt_setup();
   mqtt_reconnect();
 
+  init_scheduler();
 
-        init_scheduler();
+  gauss = analogRead(A0);
+  bool horschamps = false;
+  if ((gauss - 5) > max_calibFermer)
+    horschamps = true;               // Si la vanne est hors champs
+  if ((gauss + 5) < min_calibOuvrir) // Si la vanne est hors champs
+    horschamps = true;               // Si la vanne est hors champs
+
+  if (horschamps)
+
+    t4.disable(); // On désactive la tâche de régulation si la vanne est hors champs
+
+  else
+    t4.enable();
 }
 
 void loop()
 {
-//            vanneOff();
+  //            vanneOff();
 
   runner.execute();
 
-  if(millis() < 3000000) // 5 minutes pour faire la MAJ de l'OTA
-  ArduinoOTA.handle();
+  if (millis() < 3000000) // 5 minutes pour faire la MAJ de l'OTA
+    ArduinoOTA.handle();
   else
- mode_max = 2; //Menu accessible seulement les 5 minutes suivant le boot
+    mode_max = 2; // Menu accessible seulement les 5 minutes suivant le boot
 
-if (millis() - last_pir > DELAI_EXTINCTION) {
-  if (powerLCD) {
-    display.ssd1306_command(SSD1306_DISPLAYOFF); // ...on l'éteint
-    powerLCD = false; // ...et on mémorise son nouvel état
+  if (millis() - last_pir > DELAI_EXTINCTION)
+  {
+    if (powerLCD)
+    {
+      display.ssd1306_command(SSD1306_DISPLAYOFF); // ...on l'éteint
+      powerLCD = false;                            // ...et on mémorise son nouvel état
+    }
   }
-} 
-else {
-  if (!powerLCD) {
-    display.ssd1306_command(SSD1306_DISPLAYON); // ...on le rallume
-    powerLCD = true; // ...et on mémorise son nouvel état
+  else
+  {
+    if (!powerLCD)
+    {
+      display.ssd1306_command(SSD1306_DISPLAYON); // ...on le rallume
+      powerLCD = true;                            // ...et on mémorise son nouvel état
+    }
   }
-}
- check_pin_button();
+  check_pin_button();
 }

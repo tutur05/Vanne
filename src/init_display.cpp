@@ -131,6 +131,8 @@ void update_display()
     display.print(temperature);
     display.print((char)247); // °
     display.print("C - ");
+        if (mode_max != 2)
+    {
     if (digitalRead(PIN_VANNE_FERMER))
         display.print("F");
     if (digitalRead(PIN_VANNE_OUVRIR))
@@ -139,7 +141,7 @@ void update_display()
         display.print("cO");
     if (t7.isEnabled())
         display.print("cF");
-
+    }
     int32_t rssi = WiFi.RSSI(); // Valeur RSSI (en dBm)
 
     // Convertir RSSI en nombre de barres (0 à 4)
