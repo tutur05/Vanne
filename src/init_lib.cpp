@@ -21,6 +21,7 @@ extern int consigne;
 extern byte mode;
 extern unsigned long last_pir;
 extern unsigned last_menu;
+extern Task t1;
 extern Task t3;
 extern Task t6;
 extern Task t7;
@@ -113,8 +114,16 @@ void holdMQTT_Online() // maintient de liaison MQTT
 
 void regul_therm() // régulation de la vanne + lecture sonde
 {
+  t1.disable();
+  WiFi.disconnect();
+  WiFi.mode(WIFI_OFF);
+          message1 = "WiFi OFF";
+
+  
+
   temperature = bme.readTemperature();
   humidity = bme.readHumidity();
+     
 
   // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
   if (mode == 0)
