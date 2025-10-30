@@ -21,10 +21,7 @@ void check_pin_button()
 {
     if (mode > 2) // Désactivation du thermostat le temps des tests
     {
-        t1.disable();
-        WiFi.disconnect();
-        WiFi.mode(WIFI_OFF);
-        message1 = "WiFi OFF2";
+
 
         if (t4.isEnabled())
         {
@@ -35,7 +32,7 @@ void check_pin_button()
     }
     else
     {
-        if (!t1.isEnabled()) // Réactivation du wifi
+        if (!t1.isEnabled()) 
         {
             t1.enable();
         }
@@ -108,7 +105,7 @@ void check_pin_button()
             }
             else if (mode == 4)
             {
-                if ((min_calibOuvrir + 10) < max_calibFermer) // On augmente que si il y a une marge de 10u
+                if (min_calibOuvrir > 50) // On augmente que si il y a une marge de 10u
                 {
                     backup.begin("mon-app", false); // false = mode lecture/écriture
                     min_calibOuvrir = min_calibOuvrir + 1;
@@ -122,6 +119,14 @@ void check_pin_button()
                 backup.begin("mon-app", false); // false = mode lecture/écriture
                 max_calibFermer = max_calibFermer + 1;
                 backup.putShort("max_calibFermer", max_calibFermer);
+                backup.end(); // Ferme l'accès aux préférences
+            }
+            else if (mode == 6)
+            {
+
+                backup.begin("mon-app", false); // false = mode lecture/écriture
+                Tcalib = Tcalib + 1;
+                backup.putShort("Tcalib", Tcalib);
                 backup.end(); // Ferme l'accès aux préférences
             }
 
@@ -167,12 +172,23 @@ void check_pin_button()
             }
             else if (mode == 5)
             {
-                if ((max_calibFermer - 10) > min_calibOuvrir)
+                if (max_calibFermer  > 50)
                 {
                     backup.begin("mon-app", false); // false = mode lecture/écriture
 
                     max_calibFermer = max_calibFermer - 1;
                     backup.putShort("max_calibFermer", max_calibFermer);
+                    backup.end(); // Ferme l'accès aux préférences
+                }
+            }
+            else if (mode ==6)
+            {
+                if (Tcalib  > 50)
+                {
+                    backup.begin("mon-app", false); // false = mode lecture/écriture
+
+                    Tcalib = Tcalib - 1;
+                    backup.putShort("max_calibFermer", Tcalib);
                     backup.end(); // Ferme l'accès aux préférences
                 }
             }
@@ -194,18 +210,7 @@ void check_pin_button()
                 vanneOff();
             }
 
-            if (digitalRead(PIN_VANNE_FERMER) && gauss >= max_calibFermer)
-            {
-                // Serial.println("VanneFermer OFF car trop proche");
-                vanneOff();
-                message2 = "MaxFermer";
-            }
-            if (digitalRead(PIN_VANNE_OUVRIR) && gauss <= min_calibOuvrir)
-            {
-                // Serial.println("VanneOuvrir OFF car trop loin");
-                vanneOff();
-                message2 = "MinOuvert";
-            }
+
         }
 
         lastSel = sel;

@@ -10,6 +10,7 @@ extern byte mode;
 extern float gauss;
 extern short max_calibFermer;
 extern short min_calibOuvrir;
+extern short Tcalib;
 extern byte mode_max; //Menu prog  accessible
 void check_pin_button();
 

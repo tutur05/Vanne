@@ -12,16 +12,19 @@ extern byte mode;
 extern float gauss;
 extern short min_calibOuvrir;
 extern short max_calibFermer;
+extern short Tcalib;
 extern byte mode_max;
 String message = "";
 String message1 = "";
 String message2 = "";
 unsigned long publish_message = 0;
-const unsigned long UPDATE_INTERVAL = 2000; 
+const unsigned long UPDATE_INTERVAL = 2000;
 byte count = 0;
 extern Task t4;
 extern Task t6;
 extern Task t7;
+extern bool etat_vanne;
+
 
 void update_message()
 {
@@ -87,6 +90,9 @@ void update_display()
     case 5:
         display.println(max_calibFermer);
         break;
+    case 6:
+        display.println(Tcalib);
+        break;
     default:
         display.print(consigne);
         display.print((char)247); // °
@@ -116,6 +122,9 @@ void update_display()
     case 5:
         display.println("MaxFermer");
         break;
+    case 6:
+        display.println("TCalib");
+        break;
     }
     if (mode_max != 2)
     {
@@ -131,16 +140,16 @@ void update_display()
     display.print(temperature);
     display.print((char)247); // °
     display.print("C - ");
-        if (mode_max != 2)
+    if (mode_max != 2)
     {
-    if (digitalRead(PIN_VANNE_FERMER))
-        display.print("F");
-    if (digitalRead(PIN_VANNE_OUVRIR))
-        display.print("O");            
-    if (t6.isEnabled())
-        display.print("cO");
-    if (t7.isEnabled())
-        display.print("cF");
+        if (etat_vanne)
+            display.print("VOuv ");
+        else
+            display.print("VFer ");
+        if (t6.isEnabled())
+            display.print("cO");
+        if (t7.isEnabled())
+            display.print("cF");
     }
     int32_t rssi = WiFi.RSSI(); // Valeur RSSI (en dBm)
 

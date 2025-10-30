@@ -28,7 +28,6 @@ extern Task t7;
 extern Adafruit_SSD1306 display;
 extern String message1;
 extern float gauss;
-extern bool etat_vanne; // false = VANNE FERMEE, true = VANNE OUVERTE
 Adafruit_BME280 bme;    // définition de la variable globale
 
 bool init_bme280()
@@ -114,10 +113,6 @@ void holdMQTT_Online() // maintient de liaison MQTT
 
 void regul_therm() // régulation de la vanne + lecture sonde
 {
-  t1.disable();
-  WiFi.disconnect();
-  WiFi.mode(WIFI_OFF);
-          message1 = "WiFi OFF";
 
   
 
@@ -132,15 +127,14 @@ void regul_therm() // régulation de la vanne + lecture sonde
     {
 
       // VANNE ON
-      t6.enable(); // On active la desaction auto du moteur de la vanne
-      //vanneO();
+      t6.enable(); 
     }
     else // Il faut fermer la vanne
     {
 
       // VANNE OFF
       //vanneF();
-      t7.enable(); // On active  la desaction auto du moteur de la vanne
+      t7.enable(); 
     }
   }
   if (mode == 1)
@@ -165,17 +159,11 @@ void regul_therm() // régulation de la vanne + lecture sonde
     {
       if (consigne > temperature)
       {
-        if (!etat_vanne)
-        {
-          // VANNE ON
-        }
+       
       }
       else
       {
-        if (etat_vanne)
-        {
-          // VANNE OFF
-        }
+ 
       }
     }
     else

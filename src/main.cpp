@@ -15,8 +15,7 @@
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 
 byte mode = 0; // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
-int consigne = 18;
-
+int consigne = 21;
 const char *ssid2 = SSID2;
 const char *password2 = PASSWIFI2;
 const char *ssid = SSID1;
@@ -27,6 +26,7 @@ unsigned last_menu = 0;
 float gauss = 0;
 short max_calibFermer;
 short min_calibOuvrir;
+short Tcalib;
 bool etat_vanne = false; // false = VANNE FERMEE, true = VANNE OUVERTE
 bool vanne_mouvO = false;
 bool vanne_mouvF = false;
@@ -38,7 +38,7 @@ const unsigned long DELAI_EXTINCTION = 60000; // 10 secondes en millisecondes
 // Variable d'état pour savoir si l'écran est allumé ou non
 bool powerLCD = true;
 extern String message1;
-byte mode_max = 5; // Menu accessible
+byte mode_max = 6; // Menu accessible
 Preferences backup;
 extern Task t4; // Tâche de régulation du thermostat
 
@@ -60,6 +60,7 @@ void setup()
   backup.begin("mon-app", false); // false = mode lecture/écriture
   min_calibOuvrir = backup.getShort("min_calibOuvrir", 500);
   max_calibFermer = backup.getShort("max_calibFermer", 519);
+  Tcalib = backup.getShort("Tcalib", 100);
   backup.end(); // Ferme l'accès aux préférences
 
   update_display();
@@ -83,19 +84,7 @@ void setup()
 
   init_scheduler();
 
-  gauss = analogRead(A0);
-  bool horschamps = false;
-  if ((gauss - 5) > max_calibFermer)
-    horschamps = true;               // Si la vanne est hors champs
-  if ((gauss + 5) < min_calibOuvrir) // Si la vanne est hors champs
-    horschamps = true;               // Si la vanne est hors champs
 
-  if (horschamps)
-
-    t4.disable(); // On désactive la tâche de régulation si la vanne est hors champs
-
-  else
-    t4.enable();
 }
 
 void loop()

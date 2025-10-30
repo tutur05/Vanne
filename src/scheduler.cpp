@@ -25,10 +25,11 @@ void checkMouvVanneF(); // Vérifie si la vanne doit être arrêtée en fonction
 Task t1(30000, TASK_FOREVER, &check_connection);
 Task t2(1000, TASK_FOREVER, &holdMQTT_Online);
 Task t3(2000, TASK_FOREVER, &update_display);
-Task t4(120000, TASK_FOREVER, &regul_therm); //Fonction qui lance un controle de temp + action de thermostat
+Task t4(20000, TASK_FOREVER, &regul_therm); //Fonction qui lance un controle de temp + action de thermostat
 Task t5(200, TASK_FOREVER, &ReadCapteur); 
 Task t6(1000, TASK_FOREVER, &checkMouvVanneO); // Vérifie si la vanne doit être arrêtée en fonction de la position du capteur magnétique
 Task t7(1000, TASK_FOREVER, &checkMouvVanneF); // Vérifie si la vanne doit être arrêtée en fonction de la position du capteur magnétique
+
 
 // Définition de la fonction d'initialisation.
 void init_scheduler()
