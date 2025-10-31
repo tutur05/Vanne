@@ -150,6 +150,7 @@ void update_display()
             display.print("cO");
         if (t7.isEnabled())
             display.print("cF");
+        
     }
     int32_t rssi = WiFi.RSSI(); // Valeur RSSI (en dBm)
 

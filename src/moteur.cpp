@@ -8,9 +8,12 @@ extern bool vanne_mouvO;
 extern bool vanne_mouvF;
 extern Task t6;
 extern Task t7;
+extern String message1;
 extern String message2;
 extern bool etat_vanne;
 unsigned long timer1 = 0;
+extern short Tcalib;
+
 void init_moteur()
 {
   pinMode(PIN_VANNE_FERMER, OUTPUT);
@@ -62,7 +65,7 @@ void checkMouvVanneF() // Fonction qui vérifie quand arrêter la vanne (lancer 
       vanne_mouvF = true;
   }
   else
-  t7.disable(); // On désactive la vérification de la vanne
+    t7.disable(); // On désactive la vérification de la vanne
 }
 void checkMouvVanneO() // Fonction qui vérifie quand arrêter la vanne
 {
@@ -89,25 +92,34 @@ void checkMouvVanneO() // Fonction qui vérifie quand arrêter la vanne
       vanne_mouvO = true;
   }
   else
-        t6.disable(); // On désactive la vérification de la vanne
-
-
+    t6.disable(); // On désactive la vérification de la vanne
 }
-/*
-void init_moteur()
+
+void calib_moteur()
 {
-  gauss = analogRead(A0);
-  if (gauss) // Si vanne en butée
+delay(1000);
+  if (analogRead(A0) > 500) // Si vanne en butée
   {
-    //FERMETURE VANNE VIA  LE TEMPS DU CALIB
-    //ETAT VANNE =  
+    vanneF();
+    delay(Tcalib*10);
+    vanneOff();
+    etat_vanne = true;
   }
-  else
+  else //SINON ON TAPE LA BUTEE PUIS ON CALIB 
   {
-    //OUVERTURE VANNE JUSQUA BUTEE
-    //FERMETURE VANNE TEMPS CALIB
-  
+    // OUVERTURE VANNE JUSQUA BUTEE
+    while (analogRead(A0) < 100)
+    {
+      vanneO();
+      delay(150);
+    vanneOff(); 
+    delay(25);
+
+    }
+    vanneF();
+    delay(Tcalib*10);
+    vanneOff();
+    etat_vanne = true;
   }
-  
+  message1 = "Calib end";
 }
-*/

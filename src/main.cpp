@@ -50,7 +50,7 @@ void setup()
 
   analogWrite(15, 125);
 
-  message1 = "Connecting";
+  message1 = "Init";
 
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   {
