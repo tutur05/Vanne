@@ -27,6 +27,7 @@ extern Task t6;
 extern Task t7;
 extern Adafruit_SSD1306 display;
 extern String message1;
+extern String message2;
 extern float gauss;
 Adafruit_BME280 bme;    // définition de la variable globale
 
@@ -66,24 +67,25 @@ void mqtt_setup()
 
 bool mqtt_reconnect()
 {
-  if (!client.connected())
+  // Boucle une fois pour traiter les messages entrants et maintenir la connexion
+  client.loop();
+  if (!client.connected()) // On vérifie si on est toujours connecté
   {
     // Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP8266Client"))
     {
       // Serial.println("connected");
       client.publish("VanneV1/topic", "Hello from ESP8266");
-      return true;
     }
     else
     {
       // Serial.print("failed, rc=");
       // Serial.print(client.state());
       // Serial.println(" try again in 5 seconds");
-      return false;
     }
   }
-  return true;
+  // Retourne l'état actuel de la connexion
+  return client.connected();
 }
 
 PubSubClient &getMqttClient()
@@ -95,15 +97,16 @@ void check_connection()
 {
   check_wifi();
 
-  if (!getMqttClient().connected())
+  // Tente de se reconnecter si nécessaire et ne continue que si la connexion est active
+  if (mqtt_reconnect())
   {
-    mqtt_reconnect();
+    client.publish("VanneV1/T", String(temperature, 2).c_str());
+    client.publish("VanneV1/H", String(humidity, 2).c_str());
+    client.publish("VanneV1/timeout", String(mq).c_str());
+    message2= "mqtt";
+  } else {
     mq++;
   }
-
-  client.publish("VanneV1/T", String(temperature, 2).c_str());
-  client.publish("VanneV1/H", String(humidity, 2).c_str());
-  client.publish("VanneV1/timeout", String(mq).c_str());
 }
 
 void holdMQTT_Online() // maintient de liaison MQTT
@@ -201,9 +204,4 @@ void check_wifi()
     IPAddress ip = WiFi.localIP();
     message1 = ip.toString().c_str();
   }
-}
-
-void ReadCapteur()
-{
-  gauss = analogRead(A0); // Lecture de la sonde magnétique
 }

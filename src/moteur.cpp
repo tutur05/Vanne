@@ -1,9 +1,9 @@
 #include "moteur.h"
 #include "config.h"
 #include "scheduler.h"
-extern float gauss;
-extern short min_calibOuvrir;
-extern short max_calibFermer;
+
+extern short TcalibOuvrir;
+extern short TcalibFermer;
 extern bool vanne_mouvO;
 extern bool vanne_mouvF;
 extern Task t6;
@@ -51,13 +51,13 @@ void checkMouvVanneF() // Fonction qui vérifie quand arrêter la vanne (lancer 
       timer1 = millis();
     }
 
-    if ((millis() - timer1) >= (max_calibFermer * 10))
+    if ((millis() - timer1) >= (unsigned long)(TcalibFermer * 10))
     {
       vanneOff();
       vanne_mouvF = false;
       etat_vanne = false; // La vanne a fini de se fermer, on apsse à false
 
-      message2 = "checkVF";
+      message2 = "Vanne fermée";
 
       t7.disable(); // On désactive la vérification de la vanne
     }
@@ -78,13 +78,13 @@ void checkMouvVanneO() // Fonction qui vérifie quand arrêter la vanne
       vanneO();
     }
 
-    if ((millis() - timer1) >= (min_calibOuvrir * 10))
+    if ((millis() - timer1) >= (unsigned long)(TcalibOuvrir * 10))
     {
       timer1 = 0;
       vanneOff();
       etat_vanne = true; // La vanne a fini de s'ovurir, on apsse à true
       vanne_mouvO = false;
-      // message2 = String(timer1);
+      message2 = "Vanne ouverte";
 
       t6.disable(); // On désactive la vérification de la vanne
     }

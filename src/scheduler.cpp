@@ -17,17 +17,17 @@ void check_connection();
 void holdMQTT_Online();
 void regul_therm();
 void update_display();
-void ReadCapteur(); // Exemple d'une tâche supplémentaire
+//void ReadCapteur(); // Exemple d'une tâche supplémentaire
 void checkMouvVanneO(); // Vérifie si la vanne doit être arrêtée en fonction de la position du capteur magnétique
 void checkMouvVanneF(); // Vérifie si la vanne doit être arrêtée en fonction de la position du capteur magnétique
 void calib_moteur();
 
 // Définition des tâches.
 Task t1(30000, TASK_FOREVER, &check_connection);
-Task t2(1000, TASK_FOREVER, &holdMQTT_Online);
+Task t2(1000, TASK_FOREVER, &holdMQTT_Online);// Maintiens MQTT
 Task t3(2000, TASK_FOREVER, &update_display);
 Task t4(20000, TASK_FOREVER, &regul_therm); //Fonction qui lance un controle de temp + action de thermostat
-Task t5(200, TASK_FOREVER, &ReadCapteur); 
+//Task t5(200, TASK_FOREVER, &ReadCapteur); 
 Task t6(1000, TASK_FOREVER, &checkMouvVanneO); // Vérifie si la vanne doit être arrêtée en fonction de la position du capteur magnétique
 Task t7(1000, TASK_FOREVER, &checkMouvVanneF); // Vérifie si la vanne doit être arrêtée en fonction de la position du capteur magnétique
 Task t8(0,1, &calib_moteur);
@@ -41,7 +41,7 @@ void init_scheduler()
   runner.addTask(t2);
   runner.addTask(t3);
   runner.addTask(t4);
-  runner.addTask(t5); 
+  //runner.addTask(t5); 
   runner.addTask(t6);
     runner.addTask(t7);
     runner.addTask(t8);

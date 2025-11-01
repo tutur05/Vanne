@@ -15,7 +15,7 @@
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 
 byte mode = 0; // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
-int consigne = 21;
+int consigne = 20; // Valeur par défaut au démarrage
 const char *ssid2 = SSID2;
 const char *password2 = PASSWIFI2;
 const char *ssid = SSID1;
@@ -24,8 +24,8 @@ float temperature = 0;
 float humidity = 0;
 unsigned last_menu = 0;
 float gauss = 0;
-short max_calibFermer;
-short min_calibOuvrir;
+short TcalibFermer;
+short TcalibOuvrir;
 short Tcalib;
 bool etat_vanne = false; // false = VANNE FERMEE, true = VANNE OUVERTE
 bool vanne_mouvO = false;
@@ -58,9 +58,9 @@ void setup()
   }
 
   backup.begin("mon-app", false); // false = mode lecture/écriture
-  min_calibOuvrir = backup.getShort("min_calibOuvrir", 500);
-  max_calibFermer = backup.getShort("max_calibFermer", 519);
-  Tcalib = backup.getShort("Tcalib", 100);
+  TcalibOuvrir = backup.getShort("TcalibOuvrir", 200);//Valeur pour salle poly
+  TcalibFermer = backup.getShort("TcalibFermer", 200);//Valeur pour salle poly
+  Tcalib = backup.getShort("Tcalib", 420); //Valeur pour salle poly
   backup.end(); // Ferme l'accès aux préférences
 
   update_display();
@@ -77,7 +77,6 @@ void setup()
   // Serial.begin(115200);
   // pinMode(LED, OUTPUT);
 
-  check_wifi();
 
   mqtt_setup();
   mqtt_reconnect();

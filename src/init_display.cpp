@@ -10,8 +10,8 @@ extern float temperature;
 extern int consigne;
 extern byte mode;
 extern float gauss;
-extern short min_calibOuvrir;
-extern short max_calibFermer;
+extern short TcalibOuvrir;
+extern short TcalibFermer;
 extern short Tcalib;
 extern byte mode_max;
 String message = "";
@@ -85,10 +85,10 @@ void update_display()
         display.println("16");
         break;
     case 4:
-        display.println(min_calibOuvrir);
+        display.println(TcalibOuvrir);
         break;
     case 5:
-        display.println(max_calibFermer);
+        display.println(TcalibFermer);
         break;
     case 6:
         display.println(Tcalib);
@@ -117,10 +117,10 @@ void update_display()
         display.println("TEST");
         break;
     case 4:
-        display.println("MinOuvrir");
+        display.println("T_Ouvrir");
         break;
     case 5:
-        display.println("MaxFermer");
+        display.println("T_Fermer");
         break;
     case 6:
         display.println("TCalib");
@@ -130,11 +130,11 @@ void update_display()
     {
         display.setTextSize(1);
         display.print("+O ");
-        display.print(min_calibOuvrir);
+        display.print(TcalibOuvrir);
         display.print("<");
         display.print(roundf(gauss));
         display.print(">");
-        display.print(max_calibFermer);
+        display.print(TcalibFermer);
         display.println(" -F");
     }
     display.print(temperature);

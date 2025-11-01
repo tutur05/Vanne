@@ -8,7 +8,7 @@
 extern byte mode;
 extern Task t1;
 extern Task t4;
-extern Task t5;
+//extern Task t5;
 extern Task t6;
 extern Task t7;
 extern Preferences backup;
@@ -44,10 +44,7 @@ void check_pin_button()
     }
     if (mode >= 3)
     {
-        if (!t5.isEnabled()) // Si mode 3, On controle la sonde magnétique
-        {
-            t5.enable();
-        }
+
         // Desactivatop, des fonctions auto
         if (t6.isEnabled())
         {
@@ -60,13 +57,7 @@ void check_pin_button()
             vanneOff();
         }
     }
-    else
-    {
-        if (t5.isEnabled())
-        {
-            t5.disable();
-        }
-    }
+
 
     // if (digitalRead(PIN_PIR))
     //     last_pir = millis();
@@ -105,11 +96,11 @@ void check_pin_button()
             }
             else if (mode == 4)
             {
-                if (min_calibOuvrir > 50) // On augmente que si il y a une marge de 10u
+                if (TcalibOuvrir > 50) // On augmente que si il y a une marge de 10u
                 {
                     backup.begin("mon-app", false); // false = mode lecture/écriture
-                    min_calibOuvrir = min_calibOuvrir + 1;
-                    backup.putShort("min_calibOuvrir", min_calibOuvrir);
+                    TcalibOuvrir = TcalibOuvrir + 1;
+                    backup.putShort("TcalibOuvrir", TcalibOuvrir);
                     backup.end(); // Ferme l'accès aux préférences
                 }
             }
@@ -117,8 +108,8 @@ void check_pin_button()
             {
 
                 backup.begin("mon-app", false); // false = mode lecture/écriture
-                max_calibFermer = max_calibFermer + 1;
-                backup.putShort("max_calibFermer", max_calibFermer);
+                TcalibFermer = TcalibFermer + 1;
+                backup.putShort("TcalibFermer", TcalibFermer);
                 backup.end(); // Ferme l'accès aux préférences
             }
             else if (mode == 6)
@@ -166,18 +157,18 @@ void check_pin_button()
 
                 backup.begin("mon-app", false); // false = mode lecture/écriture
 
-                min_calibOuvrir = min_calibOuvrir - 1;
-                backup.putShort("min_calibOuvrir", min_calibOuvrir);
+                TcalibOuvrir = TcalibOuvrir - 1;
+                backup.putShort("TcalibOuvrir", TcalibOuvrir);
                 backup.end(); // Ferme l'accès aux préférences
             }
             else if (mode == 5)
             {
-                if (max_calibFermer  > 50)
+                if (TcalibFermer  > 50)
                 {
                     backup.begin("mon-app", false); // false = mode lecture/écriture
 
-                    max_calibFermer = max_calibFermer - 1;
-                    backup.putShort("max_calibFermer", max_calibFermer);
+                    TcalibFermer = TcalibFermer - 1;
+                    backup.putShort("TcalibFermer", TcalibFermer);
                     backup.end(); // Ferme l'accès aux préférences
                 }
             }
@@ -188,7 +179,7 @@ void check_pin_button()
                     backup.begin("mon-app", false); // false = mode lecture/écriture
 
                     Tcalib = Tcalib - 1;
-                    backup.putShort("max_calibFermer", Tcalib);
+                    backup.putShort("TcalibFermer", Tcalib);
                     backup.end(); // Ferme l'accès aux préférences
                 }
             }
