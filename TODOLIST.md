@@ -1,10 +1,10 @@
-- Serial Deporte via MQTT
-Ecran Extinction 
-Test fonctionnement perte wifi 
-PIR A définir
-Améliorer MQTT reconnexio n(actuellement trop frequent et bloquant si serveur MQTT down) => Faire une connexion a chaque envoie plutot que de garder la liaison ? => PB dans ce cas pour recevoir les ordres ? Ou alors envoyer des msg avec une persistance (possible via "messageretained") 
-Voir sinon pour inclure un compteur d'echec =>2 echec == > Reconnexion qu'une fois par 6h
+Wifi moins bloquant lors d'appui bouton
 
+déporté variable dans fichier conf (nom vanne, délai etc.. !)
+délai entre 2 regul themre
+nom réseau + plateforme io modifé pour upload en masse 
+
+ajout reveil ecran via pir
 GPIO 5 D1 SDA
 GPIO4 D2 SCL 
 UP GPIO12 D6
@@ -16,10 +16,6 @@ Vanne2 D8
 PIR GPIO13 D7
 
 
-CALIB OUVRIR FERMER SALLE POLY : O => 519 F =>
-Quand je ferma la vanne, la valeur  
-555 Fermer (à 556 c'est trop haut, je m'arrête)
-519 Ouvrir ( à518 c'est trop bas je m'arrête)
 
 
 Controle MQTT externe

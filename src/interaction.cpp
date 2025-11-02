@@ -32,14 +32,11 @@ void check_pin_button()
     }
     else
     {
-        if (!t1.isEnabled()) 
-        {
-            t1.enable();
-        }
+
 
         if (!t4.isEnabled())
         {
-            t4.enable();
+            t4.enableDelayed(2000); //DELAI POUR EVITER CONFLIT AVEC BTN
         }
     }
     if (mode >= 3)
@@ -59,8 +56,8 @@ void check_pin_button()
     }
 
 
-    // if (digitalRead(PIN_PIR))
-    //     last_pir = millis();
+    if (digitalRead(PIN_PIR))
+         last_pir = millis();
 
     static bool lastUp = HIGH, lastSel = HIGH, lastDown = HIGH;
 
@@ -82,7 +79,6 @@ void check_pin_button()
         if (up == LOW && lastUp == HIGH) // BTN UP PRESSE
         {
             // Serial.println("up");
-            getMqttClient().publish("VanneV1/button", "Up");
 
             if (mode == 0)
             {
@@ -99,7 +95,7 @@ void check_pin_button()
                 if (TcalibOuvrir > 50) // On augmente que si il y a une marge de 10u
                 {
                     backup.begin("mon-app", false); // false = mode lecture/écriture
-                    TcalibOuvrir = TcalibOuvrir + 1;
+                    TcalibOuvrir = TcalibOuvrir + 10;
                     backup.putShort("TcalibOuvrir", TcalibOuvrir);
                     backup.end(); // Ferme l'accès aux préférences
                 }
@@ -108,7 +104,7 @@ void check_pin_button()
             {
 
                 backup.begin("mon-app", false); // false = mode lecture/écriture
-                TcalibFermer = TcalibFermer + 1;
+                TcalibFermer = TcalibFermer + 10;
                 backup.putShort("TcalibFermer", TcalibFermer);
                 backup.end(); // Ferme l'accès aux préférences
             }
@@ -116,7 +112,7 @@ void check_pin_button()
             {
 
                 backup.begin("mon-app", false); // false = mode lecture/écriture
-                Tcalib = Tcalib + 1;
+                Tcalib = Tcalib + 10;
                 backup.putShort("Tcalib", Tcalib);
                 backup.end(); // Ferme l'accès aux préférences
             }
@@ -127,8 +123,7 @@ void check_pin_button()
         if (sel == LOW && lastSel == HIGH) // Bacule du mode via btn milieu
         {
 
-            getMqttClient().publish("VanneV1/button", "sel");
-
+            
             if (mode >= mode_max)
             {
                 mode = 0;
@@ -143,7 +138,6 @@ void check_pin_button()
         {
             // Serial.println("down");
 
-            getMqttClient().publish("VanneV1/button", "down");
             if (mode == 0)
             {
                 consigne = consigne - 1;
@@ -157,7 +151,7 @@ void check_pin_button()
 
                 backup.begin("mon-app", false); // false = mode lecture/écriture
 
-                TcalibOuvrir = TcalibOuvrir - 1;
+                TcalibOuvrir = TcalibOuvrir - 10;
                 backup.putShort("TcalibOuvrir", TcalibOuvrir);
                 backup.end(); // Ferme l'accès aux préférences
             }
@@ -167,7 +161,7 @@ void check_pin_button()
                 {
                     backup.begin("mon-app", false); // false = mode lecture/écriture
 
-                    TcalibFermer = TcalibFermer - 1;
+                    TcalibFermer = TcalibFermer - 10;
                     backup.putShort("TcalibFermer", TcalibFermer);
                     backup.end(); // Ferme l'accès aux préférences
                 }
@@ -178,8 +172,8 @@ void check_pin_button()
                 {
                     backup.begin("mon-app", false); // false = mode lecture/écriture
 
-                    Tcalib = Tcalib - 1;
-                    backup.putShort("TcalibFermer", Tcalib);
+                    Tcalib = Tcalib - 10;
+                    backup.putShort("Tcalib", Tcalib);
                     backup.end(); // Ferme l'accès aux préférences
                 }
             }

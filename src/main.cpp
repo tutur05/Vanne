@@ -14,8 +14,8 @@
 
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 
-byte mode = 0; // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
-int consigne = 20; // Valeur par défaut au démarrage
+byte mode = 2; // 0 MANUEL // 1 ECO // 2 AUTO (PIR) // 3 test moteur // 4 Calib Ouvrir // 5 Calib Fermer // 6 Calib initialisation
+int consigne = CONSIGNE; // Valeur par défaut au démarrage
 const char *ssid2 = SSID2;
 const char *password2 = PASSWIFI2;
 const char *ssid = SSID1;

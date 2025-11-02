@@ -35,9 +35,9 @@ PubSubClient& getMqttClient();
 void check_connection();
 void holdMQTT_Online();
 void update_display();
-void check_wifi();
+void manage_wifi();
 void regul_therm();
-
+void checkHorloge();
 
 
 

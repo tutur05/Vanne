@@ -97,7 +97,6 @@ void checkMouvVanneO() // Fonction qui vérifie quand arrêter la vanne
 
 void calib_moteur()
 {
-delay(1000);
   if (analogRead(A0) > 500) // Si vanne en butée
   {
     vanneF();
@@ -113,9 +112,9 @@ delay(1000);
       vanneO();
       delay(150);
     vanneOff(); 
-    delay(25);
 
     }
+    delay(100);
     vanneF();
     delay(Tcalib*10);
     vanneOff();
