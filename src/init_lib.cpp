@@ -64,6 +64,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     client.publish(NOM_VANNE "/ack", "OK2"); // Envoie un accusé de réception
     t4.forceNextIteration();                 // Force une régulation immédiate
     update_display();                        // Rafraîchit l'affichage pour montrer la nouvelle valeur
+    t9.forceNextIteration();                 // Force une publication MQTT immédiate
   }
 
   else if (strcmp(topic, NOM_VANNE "/SetMode") == 0) // MAJ mode
