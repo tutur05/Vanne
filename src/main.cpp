@@ -32,7 +32,7 @@ bool vanne_mouvO = false;
 bool vanne_mouvF = false;
 
 unsigned long last_pir = 0;
-
+unsigned long last_interaction = 0;
 const unsigned long DELAI_EXTINCTION = 60000; // 10 secondes en millisecondes
 
 // Variable d'état pour savoir si l'écran est allumé ou non

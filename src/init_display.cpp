@@ -20,9 +20,13 @@ String message2 = "";
 unsigned long publish_message = 0;
 const unsigned long UPDATE_INTERVAL = 2000;
 byte count = 0;
+extern Task t1;
+extern Task t2;
 extern Task t4;
 extern Task t6;
 extern Task t7;
+extern Task t8;
+extern Task t9;
 extern bool etat_vanne;
 
 
@@ -142,7 +146,7 @@ void update_display()
     display.print("C - ");
     if (mode_max != 2)
     {
-        if (etat_vanne)
+        /*if (etat_vanne)
             display.print("VOuv ");
         else
             display.print("VFer ");
@@ -150,7 +154,17 @@ void update_display()
             display.print("cO");
         if (t7.isEnabled())
             display.print("cF");
-        
+        */
+       if(t1.isEnabled())
+        display.print("1");
+       if(t2.isEnabled())
+        display.print("2");
+       if(t4.isEnabled())
+        display.print("4");
+        if(t8.isEnabled())
+        display.print("8");
+        if(t9.isEnabled())
+        display.print("9");         
     }
     int32_t rssi = WiFi.RSSI(); // Valeur RSSI (en dBm)
 

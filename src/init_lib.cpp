@@ -20,6 +20,7 @@ extern const char *password2;
 extern int consigne;
 extern byte mode;
 extern unsigned long last_pir;
+extern unsigned long last_interaction;
 extern unsigned last_menu;
 extern Task t1;
 extern Task t3;
@@ -123,13 +124,7 @@ bool mqtt_reconnect()
 
     client.loop(); // Traite immédiatement les messages en attente
   }
-  else
-  {
-    // Serial.print("failed, rc=");
-    // Serial.print(client.state());
-    // Serial.println(" try again in 5 seconds");
-  }
-  // Retourne l'état actuel de la connexion
+
   return client.connected();
 }
 
@@ -140,25 +135,35 @@ PubSubClient &getMqttClient()
 
 void check_connection()
 {
-  manage_wifi(); // On utilise le nouveau gestionnaire non-bloquant
+  if ((last_interaction + DELAI_PIR2) < millis())
+  {                // SI PIR PAS RECENT
+    manage_wifi(); // On utilise le nouveau gestionnaire non-bloquant
 
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    return; // Sortir si le WiFi n'est pas connecté
+    if (WiFi.status() != WL_CONNECTED)
+    {
+      return; // Sortir si le WiFi n'est pas connecté
+    }
+
+    if (!client.connected())
+    {
+      mqtt_reconnect(); // Tente de se reconnecter si la connexion MQTT est perdue
+    }
+
+    // Ne publie que si la connexion est active
   }
+}
 
-  if (!client.connected())
-  {
-    mqtt_reconnect(); // Tente de se reconnecter si la connexion MQTT est perdue
-  }
-
-  // Ne publie que si la connexion est active
-  if (client.connected())
-  {
-    client.publish(NOM_VANNE "/T", String(temperature, 2).c_str());
-    client.publish(NOM_VANNE "/H", String(humidity, 2).c_str());
-    client.publish(NOM_VANNE "/Consigne", String(consigne).c_str());
-    client.publish(NOM_VANNE "/Mode", String(mode).c_str());
+void pub_mqtt()
+{
+  if ((last_interaction + DELAI_PIR2) < millis())
+  { // SI PIR PAS RECENT
+    if (client.connected() && WiFi.status() == WL_CONNECTED)
+    {
+      client.publish(NOM_VANNE "/T", String(temperature, 2).c_str());
+      client.publish(NOM_VANNE "/H", String(humidity, 2).c_str());
+      client.publish(NOM_VANNE "/Consigne", String(consigne).c_str());
+      client.publish(NOM_VANNE "/Mode", String(mode).c_str());
+    }
   }
 }
 
