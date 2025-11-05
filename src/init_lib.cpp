@@ -210,13 +210,16 @@ void regul_therm() // régulation de la vanne + lecture sonde
   }
   if (mode == 2)
   {
+    int consigne_effective = consigne; // On utilise une variable locale pour la régulation
 
     if ((last_pir + DELAI_PIR) > millis()) // SI PIR RECENT
-      consigne = CONSIGNE;
+    {
+      consigne_effective = CONSIGNE; // On utilise la consigne confort
+    }
     else
-      consigne = 16; // CONSIGNE ECO
+      consigne_effective = 16; // CONSIGNE ECO
 
-    if (consigne > temperature)
+    if (consigne_effective > temperature)
     {
       t6.enable();
     }
