@@ -28,6 +28,7 @@ extern Task t4;
 extern Task t5;
 extern Task t6;
 extern Task t7;
+extern Task t9;
 extern Adafruit_SSD1306 display;
 extern String message1;
 extern String message2;
@@ -136,7 +137,7 @@ PubSubClient &getMqttClient()
 
 void check_connection()
 {
-  if ((last_interaction + DELAI_PIR2) < millis())
+  if ((last_interaction + DELAI_INTERACTION) < millis())
   {                // SI PIR PAS RECENT
     manage_wifi(); // On utilise le nouveau gestionnaire non-bloquant
 
@@ -156,7 +157,7 @@ void check_connection()
 
 void pub_mqtt()
 {
-  if ((last_interaction + DELAI_PIR2) < millis())
+  if ((last_interaction + DELAI_INTERACTION) < millis())
   { // SI PIR PAS RECENT
     if (client.connected() && WiFi.status() == WL_CONNECTED)
     {
@@ -176,57 +177,60 @@ void holdMQTT_Online() // maintient de liaison MQTT
 
 void regul_therm() // régulation de la vanne + lecture sonde
 {
-
-  temperature = bme.readTemperature();
-  humidity = bme.readHumidity();
-
-  // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
-  if (mode == 0)
-  {
-    if (consigne > temperature)
-    {
-
-      // VANNE ON
-      t6.enable();
-    }
-    else // Il faut fermer la vanne
-    {
-
-      // VANNE OFF
-      // vanneF();
-      t7.enable();
-    }
-  }
-  if (mode == 1)
+  if ((last_interaction + DELAI_INTERACTION) < millis())
   {
 
-    if (16 > temperature)
-    {
-      t6.enable(); // VANNE ON
-    }
-    else
-    {
-      t7.enable(); // VANNE OFF
-    }
-  }
-  if (mode == 2)
-  {
-    int consigne_effective = consigne; // On utilise une variable locale pour la régulation
+    temperature = bme.readTemperature();
+    humidity = bme.readHumidity();
 
-    if ((last_pir + DELAI_PIR) > millis()) // SI PIR RECENT
+    // 0 MANUEL // 1 ECO // 2 AUTO (PIR)
+    if (mode == 0)
     {
-      consigne_effective = CONSIGNE; // On utilise la consigne confort
-    }
-    else
-      consigne_effective = 16; // CONSIGNE ECO
+      if (consigne > temperature)
+      {
 
-    if (consigne_effective > temperature)
-    {
-      t6.enable();
+        // VANNE ON
+        t6.enable();
+      }
+      else // Il faut fermer la vanne
+      {
+
+        // VANNE OFF
+        // vanneF();
+        t7.enable();
+      }
     }
-    else // Il faut fermer la vanne
+    if (mode == 1)
     {
-      t7.enable();
+
+      if (16 > temperature)
+      {
+        t6.enable(); // VANNE ON
+      }
+      else
+      {
+        t7.enable(); // VANNE OFF
+      }
+    }
+    if (mode == 2)
+    {
+      int consigne_effective = consigne; // On utilise une variable locale pour la régulation
+
+      if ((last_pir + DELAI_PIR) > millis()) // SI PIR RECENT
+      {
+        consigne_effective = CONSIGNE; // On utilise la consigne confort
+      }
+      else
+        consigne_effective = 16; // CONSIGNE ECO
+
+      if (consigne_effective > temperature)
+      {
+        t6.enable();
+      }
+      else // Il faut fermer la vanne
+      {
+        t7.enable();
+      }
     }
   }
 }

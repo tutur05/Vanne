@@ -69,7 +69,7 @@ void setup()
   pinMode(PIN_BTNUP, INPUT_PULLUP);
   pinMode(PIN_BTNMID, INPUT_PULLUP);
   pinMode(PIN_BTNDOWN, INPUT_PULLUP);
-  pinMode(A0, INPUT); // Pin A0 pour la sonde magnetique
+  pinMode(A0, INPUT); // Pin A0 pour le capteur butée 
   init_bme280();
 
   init_OTA();
@@ -88,13 +88,12 @@ void setup()
 
 void loop()
 {
-  //            vanneOff();
 
   runner.execute();
-
-  if (millis() < 3000000) // 5 minutes pour faire la MAJ de l'OTA
     ArduinoOTA.handle();
-  else
+
+  if (millis() > 3000000) // 5 minutes 
+  
     mode_max = 2; // Menu accessible seulement les 5 minutes suivant le boot
 
   if (millis() - last_pir > DELAI_EXTINCTION)
