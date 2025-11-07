@@ -97,26 +97,35 @@ void checkMouvVanneO() // Fonction qui vérifie quand arrêter la vanne
 
 void calib_moteur()
 {
+  const unsigned long CALIBRATION_TIMEOUT = 15000; // 15 secondes de sécurité
+  unsigned long startTime;
+
   if (analogRead(A0) > 500) // Si vanne en butée
   {
     vanneF();
-    delay(Tcalib*10);
+    delay(Tcalib * 10);
     vanneOff();
     etat_vanne = true;
   }
-  else //SINON ON TAPE LA BUTEE PUIS ON CALIB 
+  else // SINON ON TAPE LA BUTEE PUIS ON CALIB
   {
     // OUVERTURE VANNE JUSQUA BUTEE
-    while (analogRead(A0) < 100)
+    startTime = millis();
+    while (analogRead(A0) < 100) // On cherche la butée ouverte
     {
       vanneO();
       delay(150);
-    vanneOff(); 
-
+      vanneOff();
+      // Sécurité : si la butée n'est pas atteinte après un certain temps, on arrête.
+      if (millis() - startTime > CALIBRATION_TIMEOUT)
+      {
+        message1 = "Erreur Calib";
+        return; // On quitte la fonction pour éviter une boucle infinie
+      }
     }
     delay(100);
-    vanneF();
-    delay(Tcalib*10);
+    vanneF(); // On ferme complètement la vanne
+    delay(Tcalib * 10);
     vanneOff();
     etat_vanne = true;
   }

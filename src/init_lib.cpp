@@ -248,9 +248,19 @@ void manage_wifi()
     if (wifi_state != WIFI_CONNECTED)
     {
       // On vient de se connecter
+
+
+
+
       IPAddress ip = WiFi.localIP();
       message1 = ip.toString().c_str();
       wifi_state = WIFI_CONNECTED;
+
+      if (!MDNS.begin(NOM_VANNE)) {
+    message2 = "Erreur DNS";
+  }
+
+
     }
     return;
   }
@@ -327,14 +337,11 @@ void checkHorloge()
     // Condition l'heure que vous voulez déclencher
     if (timeinfo.tm_hour == 01 && timeinfo.tm_min == 00)
     {
-      message1 = "Calib Moteur en cours";
+      message1 = "Calib Moteur...";
       calib_moteur();                 // Appelle la fonction de calibration du moteur
       t5.disable();                   // Désactive cette tâche après exécution unique
       t5.enableDelayed(23 * 3600000); // Réactive la tâche après 23 heures pour éviter les répétitions
     }
   }
-  else
-  {
-    message1 = "WiFi non connecté";
-  }
+
 }

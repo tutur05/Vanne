@@ -3,8 +3,6 @@ Wifi moins bloquant lors d'appui bouton
 déporté variable dans fichier conf (nom vanne, délai etc.. !)
 délai entre 2 regul themre
 nom réseau + plateforme io modifé pour upload en masse 
-Déclencher moteur quand PIR détecté
-Désactiver wifi le temp d'une manip (interaction bouton) OK MAIS différencier PIR des boutons
 
 
 ajout reveil ecran via pir

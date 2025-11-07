@@ -166,23 +166,32 @@ void update_display()
         if(t9.isEnabled())
         display.print("9");         
     }
-    int32_t rssi = WiFi.RSSI(); // Valeur RSSI (en dBm)
-
-    // Convertir RSSI en nombre de barres (0 à 4)
     int bars = 0;
-    if (rssi > -60)
-        bars = 4;
-    else if (rssi > -70)
-        bars = 3;
-    else if (rssi > -80)
-        bars = 2;
-    else if (rssi > -90)
-        bars = 1;
+    if (WiFi.status() == WL_CONNECTED)
+    {
+        int32_t rssi = WiFi.RSSI(); // Valeur RSSI (en dBm)
+        // Convertir RSSI en nombre de barres (0 à 4)
+        if (rssi > -60)
+            bars = 4;
+        else if (rssi > -70)
+            bars = 3;
+        else if (rssi > -80)
+            bars = 2;
+        else if (rssi > -90)
+            bars = 1;
+        else
+            bars = 0;
+    }
     else
-        bars = 0;
+    {
+        // Si le WiFi n'est pas connecté, afficher un '!'
+        display.setTextSize(2);
+        display.setCursor(100, 0);
+        display.print("!");
+    }
 
     // Dessiner les barres type "antenne"
-    int baseX = 90;
+    int baseX = 110;
     int baseY = 12; // Position de base pour les barres
     int barWidth = 3;
     int spacing = 1;
