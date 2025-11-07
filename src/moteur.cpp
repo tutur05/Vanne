@@ -1,19 +1,35 @@
 #include "moteur.h"
 #include "config.h"
 #include "scheduler.h"
+#include "init_display.h"
 
 extern short TcalibOuvrir;
 extern short TcalibFermer;
 extern bool vanne_mouvO;
 extern bool vanne_mouvF;
+extern Task t1;
 extern Task t6;
 extern Task t7;
+extern Task t8;
 extern String message1;
 extern String message2;
 extern bool etat_vanne;
 unsigned long timer1 = 0;
 extern short Tcalib;
 
+enum CalibState {
+    CALIB_IDLE,
+    CALIB_START,
+    CALIB_CLOSING_FROM_OPEN_BUTEE,
+    CALIB_SEARCHING_OPEN_BUTEE,
+    CALIB_PAUSE_BEFORE_CLOSING,
+    CALIB_CLOSING_FOR_CALIBRATION,
+    CALIB_DONE,
+    CALIB_ERROR
+};
+
+static CalibState calibState = CALIB_IDLE;
+static unsigned long calibTimer = 0;
 void init_moteur()
 {
   pinMode(PIN_VANNE_FERMER, OUTPUT);
@@ -95,39 +111,92 @@ void checkMouvVanneO() // Fonction qui vérifie quand arrêter la vanne
     t6.disable(); // On désactive la vérification de la vanne
 }
 
+void start_calib_moteur() {
+    calibState = CALIB_START;
+    t8.enable(); // On active la tâche de calibration
+}
+
 void calib_moteur()
 {
   const unsigned long CALIBRATION_TIMEOUT = 15000; // 15 secondes de sécurité
-  unsigned long startTime;
 
-  if (analogRead(A0) > 500) // Si vanne en butée
-  {
-    vanneF();
-    delay(Tcalib * 10);
-    vanneOff();
-    etat_vanne = true;
-  }
-  else // SINON ON TAPE LA BUTEE PUIS ON CALIB
-  {
-    // OUVERTURE VANNE JUSQUA BUTEE
-    startTime = millis();
-    while (analogRead(A0) < 100) // On cherche la butée ouverte
-    {
-      vanneO();
-      delay(150);
-      vanneOff();
-      // Sécurité : si la butée n'est pas atteinte après un certain temps, on arrête.
-      if (millis() - startTime > CALIBRATION_TIMEOUT)
-      {
-        message1 = "Erreur Calib";
-        return; // On quitte la fonction pour éviter une boucle infinie
+  switch (calibState) {
+    case CALIB_IDLE:
+      // Ne fait rien, attend d'être démarré
+      break;
+
+    case CALIB_START:
+      message1 = "Calibration...";
+      update_display();
+      if (analogRead(A0) > 500) { // Si vanne déjà en butée ouverte
+        calibState = CALIB_CLOSING_FROM_OPEN_BUTEE;
+        message1 = "Fermeture...";
+        update_display();
+        vanneF();
+        calibTimer = millis();
+      } else { // Sinon, on cherche la butée ouverte
+        calibState = CALIB_SEARCHING_OPEN_BUTEE;
+        message1 = "Rech. butee O";
+        update_display();
+        vanneO();
+        calibTimer = millis();
       }
-    }
-    delay(100);
-    vanneF(); // On ferme complètement la vanne
-    delay(Tcalib * 10);
-    vanneOff();
-    etat_vanne = true;
+      break;
+
+    case CALIB_CLOSING_FROM_OPEN_BUTEE:
+      if (millis() - calibTimer >= (unsigned long)(Tcalib * 10)) {
+        vanneOff();
+        etat_vanne = false; // La vanne est maintenant considérée comme fermée
+        calibState = CALIB_DONE;
+      }
+      break;
+
+    case CALIB_SEARCHING_OPEN_BUTEE:
+      if (analogRead(A0) >= 100) { // Butée ouverte atteinte
+        vanneOff();
+        message1 = "Butee O. OK";
+        update_display();
+        calibState = CALIB_PAUSE_BEFORE_CLOSING;
+        calibTimer = millis();
+      } else if (millis() - calibTimer > CALIBRATION_TIMEOUT) {
+        calibState = CALIB_ERROR;
+      }
+      break;
+
+    case CALIB_PAUSE_BEFORE_CLOSING:
+      if (millis() - calibTimer >= 100) {
+        calibState = CALIB_CLOSING_FOR_CALIBRATION;
+        message1 = "Fermeture...";
+        update_display();
+        vanneF(); // On ferme complètement la vanne
+        calibTimer = millis();
+      }
+      break;
+
+    case CALIB_CLOSING_FOR_CALIBRATION:
+      if (millis() - calibTimer >= (unsigned long)(Tcalib * 10)) {
+        vanneOff();
+        etat_vanne = false; // La vanne est maintenant considérée comme fermée
+        calibState = CALIB_DONE;
+      }
+      break;
+
+    case CALIB_DONE:
+      message1 = "Calib terminee";
+      update_display();
+      calibState = CALIB_IDLE;
+      t8.disable(); // Calibration terminée, on désactive la tâche
+        t1.enableDelayed(1000); //Activation Wifi
+
+      break;
+
+    case CALIB_ERROR:
+      vanneOff();
+      message1 = "Erreur Calib";
+      update_display();
+      calibState = CALIB_IDLE;
+      t8.disable(); // On arrête en cas d'erreur
+      t1.enableDelayed(1000); //Activation Wifi
+      break;
   }
-  message1 = "Calib end";
 }

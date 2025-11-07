@@ -81,7 +81,8 @@ void setup()
   mqtt_setup();
   mqtt_reconnect();
 
-  init_scheduler();
+  init_scheduler(); // Doit être avant start_calib_moteur()
+  start_calib_moteur(); // Lance la calibration non-bloquante
 
 
 }
