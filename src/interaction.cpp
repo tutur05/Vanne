@@ -17,6 +17,7 @@ extern String message2;
 extern bool powerLCD;
 extern unsigned long last_pir;
 extern unsigned long last_interaction;
+extern PubSubClient client;
 void check_pin_button()
 {
     if (mode > 2) // Désactivation du thermostat le temps des tests
@@ -56,6 +57,8 @@ void check_pin_button()
     if (digitalRead(PIN_PIR))
     {
         last_pir = millis();
+        client.publish(NOM_VANNE "/PIR", String("1").c_str());
+
         if (mode == 2 && !t4.isEnabled()) // Activation du thermostat si mouvement détecté
             t4.enable();
     }

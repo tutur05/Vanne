@@ -29,7 +29,6 @@ extern Task t8;
 extern Task t9;
 extern bool etat_vanne;
 
-
 void update_message()
 {
 
@@ -155,16 +154,16 @@ void update_display()
         if (t7.isEnabled())
             display.print("cF");
         */
-       if(t1.isEnabled())
-        display.print("1");
-       if(t2.isEnabled())
-        display.print("2");
-       if(t4.isEnabled())
-        display.print("4");
-        if(t8.isEnabled())
-        display.print("8");
-        if(t9.isEnabled())
-        display.print("9");         
+        if (t1.isEnabled())
+            display.print("1");
+        if (t2.isEnabled())
+            display.print("2");
+        if (t4.isEnabled())
+            display.print("4");
+        if (t8.isEnabled())
+            display.print("8");
+        if (t9.isEnabled())
+            display.print("9");
     }
     int bars = 0;
     if (WiFi.status() == WL_CONNECTED)

@@ -165,6 +165,8 @@ void pub_mqtt()
       client.publish(NOM_VANNE "/H", String(humidity, 2).c_str());
       client.publish(NOM_VANNE "/Consigne", String(consigne).c_str());
       client.publish(NOM_VANNE "/Mode", String(mode).c_str());
+      client.publish(NOM_VANNE "/LastPIR", String(last_pir/1000).c_str());
+
     }
   }
 }
