@@ -339,7 +339,7 @@ void checkHorloge()
     // Condition l'heure que vous voulez déclencher
     if (timeinfo.tm_hour == 01 && timeinfo.tm_min == 00)
     {
-      message1 = "Calib Moteur...";
+      message2 = "Calib Moteur...";
       calib_moteur();                 // Appelle la fonction de calibration du moteur
       t5.disable();                   // Désactive cette tâche après exécution unique
       t5.enableDelayed(23 * 3600000); // Réactive la tâche après 23 heures pour éviter les répétitions
