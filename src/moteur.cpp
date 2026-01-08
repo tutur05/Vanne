@@ -118,7 +118,7 @@ void start_calib_moteur() {
 
 void calib_moteur()
 {
-  const unsigned long CALIBRATION_TIMEOUT = 15000; // 15 secondes de sécurité
+  const unsigned long CALIBRATION_TIMEOUT = 20000; // 15 secondes de sécurité
 
   switch (calibState) {
     case CALIB_IDLE:

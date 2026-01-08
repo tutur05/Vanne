@@ -18,6 +18,7 @@ extern bool powerLCD;
 extern unsigned long last_pir;
 extern unsigned long last_interaction;
 extern PubSubClient client;
+extern int consigne_effective;
 void check_pin_button()
 {
     if (mode > 2) // Désactivation du thermostat le temps des tests

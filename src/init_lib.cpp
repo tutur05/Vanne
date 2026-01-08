@@ -33,6 +33,7 @@ extern Adafruit_SSD1306 display;
 extern String message1;
 extern String message2;
 extern float gauss;
+int consigne_effective;
 bool ntp = false;    // heure recuperé ?
 Adafruit_BME280 bme; // définition de la variable globale
 
@@ -163,10 +164,14 @@ void pub_mqtt()
     {
       client.publish(NOM_VANNE "/T", String(temperature, 2).c_str());
       client.publish(NOM_VANNE "/H", String(humidity, 2).c_str());
-      client.publish(NOM_VANNE "/Consigne", String(consigne).c_str());
+      
       client.publish(NOM_VANNE "/Mode", String(mode).c_str());
       client.publish(NOM_VANNE "/LastPIR", String(last_pir/1000).c_str());
 
+      if(mode==2)
+      client.publish(NOM_VANNE "/Consigne", String(consigne_effective).c_str());
+      else
+      client.publish(NOM_VANNE "/Consigne", String(consigne).c_str());
     }
   }
 }
@@ -216,7 +221,7 @@ void regul_therm() // régulation de la vanne + lecture sonde
     }
     if (mode == 2)
     {
-      int consigne_effective = consigne; // On utilise une variable locale pour la régulation
+      consigne_effective = consigne; // On utilise une variable ne pas toucher à consigne 
 
       if ((last_pir + DELAI_PIR) > millis()) // SI PIR RECENT
       {

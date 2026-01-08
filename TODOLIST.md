@@ -22,3 +22,6 @@ PIR GPIO13 D7
 Controle MQTT externe
 Menu TEST avec afficheur de la course de la sonde ?
 Démarrer regul therm que si la vanne n'est pas hors course
+
+Liste commande pilotage
+/SetMode= 0 1 2 
