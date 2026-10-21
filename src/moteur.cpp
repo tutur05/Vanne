@@ -8,6 +8,7 @@ extern short TcalibFermer;
 extern bool vanne_mouvO;
 extern bool vanne_mouvF;
 extern Task t1;
+extern Task t4;
 extern Task t6;
 extern Task t7;
 extern Task t8;
@@ -30,6 +31,19 @@ enum CalibState {
 
 static CalibState calibState = CALIB_IDLE;
 static unsigned long calibTimer = 0;
+
+// Durée en ms, bornée : une valeur flash corrompue ne peut pas laisser le moteur tourner indéfiniment
+static unsigned long dureeMs(short t)
+{
+  if (t < CALIB_MIN) t = CALIB_MIN;
+  if (t > CALIB_MAX) t = CALIB_MAX;
+  return (unsigned long)t * 10;
+}
+
+bool calib_en_cours()
+{
+  return calibState != CALIB_IDLE;
+}
 void init_moteur()
 {
   pinMode(PIN_VANNE_FERMER, OUTPUT);
@@ -67,7 +81,7 @@ void checkMouvVanneF() // Fonction qui vérifie quand arrêter la vanne (lancer 
       timer1 = millis();
     }
 
-    if ((millis() - timer1) >= (unsigned long)(TcalibFermer * 10))
+    if ((millis() - timer1) >= dureeMs(TcalibFermer))
     {
       vanneOff();
       vanne_mouvF = false;
@@ -94,7 +108,7 @@ void checkMouvVanneO() // Fonction qui vérifie quand arrêter la vanne
       vanneO();
     }
 
-    if ((millis() - timer1) >= (unsigned long)(TcalibOuvrir * 10))
+    if ((millis() - timer1) >= dureeMs(TcalibOuvrir))
     {
       timer1 = 0;
       vanneOff();
@@ -112,6 +126,11 @@ void checkMouvVanneO() // Fonction qui vérifie quand arrêter la vanne
 }
 
 void start_calib_moteur() {
+    if (calibState != CALIB_IDLE)
+      return; // Déjà en cours
+    t6.disable(); // Plus de mouvement de régulation pendant la calibration
+    t7.disable();
+    vanneOff();
     calibState = CALIB_START;
     t8.enable(); // On active la tâche de calibration
 }
@@ -144,7 +163,7 @@ void calib_moteur()
       break;
 
     case CALIB_CLOSING_FROM_OPEN_BUTEE:
-      if (millis() - calibTimer >= (unsigned long)(Tcalib * 10)) {
+      if (millis() - calibTimer >= dureeMs(Tcalib)) {
         vanneOff();
         etat_vanne = false; // La vanne est maintenant considérée comme fermée
         calibState = CALIB_DONE;
@@ -174,7 +193,7 @@ void calib_moteur()
       break;
 
     case CALIB_CLOSING_FOR_CALIBRATION:
-      if (millis() - calibTimer >= (unsigned long)(Tcalib * 10)) {
+      if (millis() - calibTimer >= dureeMs(Tcalib)) {
         vanneOff();
         etat_vanne = false; // La vanne est maintenant considérée comme fermée
         calibState = CALIB_DONE;
@@ -186,7 +205,8 @@ void calib_moteur()
       update_display();
       calibState = CALIB_IDLE;
       t8.disable(); // Calibration terminée, on désactive la tâche
-        t1.enableDelayed(1000); //Activation Wifi
+      t1.enableDelayed(1000); //Activation Wifi
+      t4.enableDelayed(2000); // (Re)lance la régulation maintenant que la vanne est à une position connue
 
       break;
 
@@ -197,6 +217,7 @@ void calib_moteur()
       calibState = CALIB_IDLE;
       t8.disable(); // On arrête en cas d'erreur
       t1.enableDelayed(1000); //Activation Wifi
+      t4.enableDelayed(2000);
       break;
   }
 }

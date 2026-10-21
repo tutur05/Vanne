@@ -34,6 +34,13 @@ extern String message1;
 extern String message2;
 extern float gauss;
 int consigne_effective;
+
+#ifndef DELAI_MANUEL
+#define DELAI_MANUEL 14400000UL // 4h : retour automatique en AUTO après un réglage manuel à distance
+#endif
+static bool manuel_distant = false;
+static unsigned long manuel_depuis = 0;
+static bool ota_demarre = false;
 bool ntp = false;    // heure recuperé ?
 Adafruit_BME280 bme; // définition de la variable globale
 
@@ -56,12 +63,22 @@ void callback(char *topic, byte *payload, unsigned int length)
   char buffer[length + 1];
   memcpy(buffer, payload, length);
   buffer[length] = '\0';
-  String payloadStr = String(buffer);
 
   // Vérifie si le message vient du bon topic
+  char *fin;
+  long val = strtol(buffer, &fin, 10);
+  bool valide = (fin != buffer && *fin == '\0'); // Refuse le texte et les valeurs vides
+
   if (strcmp(topic, NOM_VANNE "/SetConsigne") == 0) // MAJ consigne
   {
-    consigne = payloadStr.toInt();           // Met à jour la consigne
+    if (!valide || val < 5 || val > 30)
+    {
+      client.publish(NOM_VANNE "/ack", "ERR");
+      return;
+    }
+    consigne = val;                          // Met à jour la consigne
+    manuel_distant = true;                   // Retour auto en AUTO après DELAI_MANUEL
+    manuel_depuis = millis();
     mode = 0;                                // Passe en mode manuel lors de la mise à jour de la consigne
     client.publish(NOM_VANNE "/ack", "OK2"); // Envoie un accusé de réception
     t4.forceNextIteration();                 // Force une régulation immédiate
@@ -71,11 +88,30 @@ void callback(char *topic, byte *payload, unsigned int length)
 
   else if (strcmp(topic, NOM_VANNE "/SetMode") == 0) // MAJ mode
   {
-    mode = payloadStr.toInt();               // Met à jour la consigne
+    if (!valide || val < 0 || val > 2) // Les modes 3 à 6 (tests/calibration) restent réservés aux boutons
+    {
+      client.publish(NOM_VANNE "/ack", "ERR");
+      return;
+    }
+    mode = val;
+    manuel_distant = (mode == 0);
+    manuel_depuis = millis();
     client.publish(NOM_VANNE "/ack", "OK3"); // Envoie un accusé de réception
     t4.forceNextIteration();                 // Force une régulation immédiate
 
     update_display(); // Rafraîchit l'affichage pour montrer la nouvelle valeur
+  }
+}
+
+// Repasse en AUTO si un réglage manuel distant dure trop longtemps
+void check_manuel_distant()
+{
+  if (manuel_distant && mode == 0 && millis() - manuel_depuis > DELAI_MANUEL)
+  {
+    mode = 2;
+    manuel_distant = false;
+    t4.forceNextIteration();
+    update_display();
   }
 }
 
@@ -86,7 +122,7 @@ bool init_bme280()
 
 void init_OTA()
 {
-  ArduinoOTA.setHostname("vanneV2");
+  ArduinoOTA.setHostname(NOM_VANNE); // Même nom que le mDNS (upload_port de platformio.ini)
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
   // No authentication by default
@@ -105,7 +141,7 @@ void init_OTA()
      else if (error == OTA_CONNECT_ERROR) // Serial.println("Connect Failed");
      else if (error == OTA_RECEIVE_ERROR) // Serial.println("Receive Failed");
      else if (error == OTA_END_ERROR) // Serial.println("End Failed"); });*/
-  ArduinoOTA.begin();
+  // ArduinoOTA.begin() est appelé dans manage_wifi() une fois l'IP obtenue
 }
 
 void mqtt_setup()
@@ -138,7 +174,7 @@ PubSubClient &getMqttClient()
 
 void check_connection()
 {
-  if ((last_interaction + DELAI_INTERACTION) < millis())
+  if (millis() - last_interaction > DELAI_INTERACTION)
   {                // SI PIR PAS RECENT
     manage_wifi(); // On utilise le nouveau gestionnaire non-bloquant
 
@@ -158,7 +194,7 @@ void check_connection()
 
 void pub_mqtt()
 {
-  if ((last_interaction + DELAI_INTERACTION) < millis())
+  if (millis() - last_interaction > DELAI_INTERACTION)
   { // SI PIR PAS RECENT
     if (client.connected() && WiFi.status() == WL_CONNECTED)
     {
@@ -184,7 +220,10 @@ void holdMQTT_Online() // maintient de liaison MQTT
 
 void regul_therm() // régulation de la vanne + lecture sonde
 {
-  if ((last_interaction + DELAI_INTERACTION) < millis())
+  if (calib_en_cours())
+    return; // La calibration pilote le moteur, on ne régule pas en même temps
+
+  if (millis() - last_interaction > DELAI_INTERACTION)
   {
 
     temperature = bme.readTemperature();
@@ -223,7 +262,7 @@ void regul_therm() // régulation de la vanne + lecture sonde
     {
       consigne_effective = consigne; // On utilise une variable ne pas toucher à consigne 
 
-      if ((last_pir + DELAI_PIR) > millis()) // SI PIR RECENT
+      if (millis() - last_pir < DELAI_PIR) // SI PIR RECENT
       {
         consigne_effective = CONSIGNE; // On utilise la consigne confort
       }
@@ -263,9 +302,11 @@ void manage_wifi()
       message1 = ip.toString().c_str();
       wifi_state = WIFI_CONNECTED;
 
-      if (!MDNS.begin(NOM_VANNE)) {
-    message2 = "Erreur DNS";
-  }
+      if (!ota_demarre) // OTA + mDNS démarrent une seule fois, quand le réseau est prêt
+      {
+        ArduinoOTA.begin();
+        ota_demarre = true;
+      }
 
 
     }
@@ -287,6 +328,7 @@ void manage_wifi()
     message1 = "Connexion...";
     WiFi.disconnect();
     WiFi.mode(WIFI_STA);
+    WiFi.hostname(NOM_VANNE);
     WiFi.begin(ssid, password);
     wifi_state = WIFI_CONNECTING_SSID1;
     wifi_connect_start_time = millis();
@@ -345,7 +387,7 @@ void checkHorloge()
     if (timeinfo.tm_hour == 01 && timeinfo.tm_min == 00)
     {
       message2 = "Calib Moteur...";
-      calib_moteur();                 // Appelle la fonction de calibration du moteur
+      start_calib_moteur();           // Lance la calibration non bloquante
       t5.disable();                   // Désactive cette tâche après exécution unique
       t5.enableDelayed(23 * 3600000); // Réactive la tâche après 23 heures pour éviter les répétitions
     }

@@ -62,6 +62,9 @@ void setup()
   TcalibFermer = backup.getShort("TcalibFermer", 200);//Valeur pour salle poly
   Tcalib = backup.getShort("Tcalib", 420); //Valeur pour salle poly
   backup.end(); // Ferme l'accès aux préférences
+  TcalibOuvrir = constrain(TcalibOuvrir, CALIB_MIN, CALIB_MAX); // Protège d'une valeur flash invalide
+  TcalibFermer = constrain(TcalibFermer, CALIB_MIN, CALIB_MAX);
+  Tcalib = constrain(Tcalib, CALIB_MIN, CALIB_MAX);
 
   update_display();
 
@@ -91,6 +94,7 @@ void loop()
 {
 
   runner.execute();
+  check_manuel_distant();
     ArduinoOTA.handle();
 
   if (millis() > 3000000) // 5 minutes 

@@ -19,6 +19,20 @@ extern unsigned long last_pir;
 extern unsigned long last_interaction;
 extern PubSubClient client;
 extern int consigne_effective;
+// Ajuste un temps de calibration (borné) et le sauvegarde en flash seulement s'il change
+static void ajuster_calib(short &val, short delta, const char *cle)
+{
+    short n = val + delta;
+    if (n < CALIB_MIN) n = CALIB_MIN;
+    if (n > CALIB_MAX) n = CALIB_MAX;
+    if (n == val)
+        return;
+    val = n;
+    backup.begin("mon-app", false);
+    backup.putShort(cle, val);
+    backup.end();
+}
+
 void check_pin_button()
 {
     if (mode > 2) // Désactivation du thermostat le temps des tests
@@ -34,7 +48,7 @@ void check_pin_button()
     else
     {
 
-        if (!t4.isEnabled())
+        if (!t4.isEnabled() && !calib_en_cours()) // t4 est relancée par la fin de calibration
         {
             t4.enableDelayed(2000); // DELAI POUR EVITER CONFLIT AVEC BTN
         }
@@ -55,14 +69,23 @@ void check_pin_button()
         }
     }
 
-    if (digitalRead(PIN_PIR))
+    static bool lastPir = false;
+    static unsigned long lastPirPub = 0;
+    bool pir = digitalRead(PIN_PIR);
+    if (pir)
     {
         last_pir = millis();
-        client.publish(NOM_VANNE "/PIR", String("1").c_str());
+        // Publication sur front montant, puis au plus toutes les 30 s tant que le PIR reste actif
+        if ((!lastPir || millis() - lastPirPub > 30000) && client.connected())
+        {
+            client.publish(NOM_VANNE "/PIR", "1");
+            lastPirPub = millis();
+        }
 
-        if (mode == 2 && !t4.isEnabled()) // Activation du thermostat si mouvement détecté
+        if (mode == 2 && !t4.isEnabled() && !calib_en_cours()) // Activation du thermostat si mouvement détecté
             t4.enable();
     }
+    lastPir = pir;
         static bool lastUp = HIGH, lastSel = HIGH, lastDown = HIGH;
 
         // Lecture boutons
@@ -96,29 +119,15 @@ void check_pin_button()
                 }
                 else if (mode == 4)
                 {
-                    if (TcalibOuvrir > 50) // On augmente que si il y a une marge de 10u
-                    {
-                        backup.begin("mon-app", false); // false = mode lecture/écriture
-                        TcalibOuvrir = TcalibOuvrir + 10;
-                        backup.putShort("TcalibOuvrir", TcalibOuvrir);
-                        backup.end(); // Ferme l'accès aux préférences
-                    }
+                    ajuster_calib(TcalibOuvrir, 10, "TcalibOuvrir");
                 }
                 else if (mode == 5)
                 {
-
-                    backup.begin("mon-app", false); // false = mode lecture/écriture
-                    TcalibFermer = TcalibFermer + 10;
-                    backup.putShort("TcalibFermer", TcalibFermer);
-                    backup.end(); // Ferme l'accès aux préférences
+                    ajuster_calib(TcalibFermer, 10, "TcalibFermer");
                 }
                 else if (mode == 6)
                 {
-
-                    backup.begin("mon-app", false); // false = mode lecture/écriture
-                    Tcalib = Tcalib + 10;
-                    backup.putShort("Tcalib", Tcalib);
-                    backup.end(); // Ferme l'accès aux préférences
+                    ajuster_calib(Tcalib, 10, "Tcalib");
                 }
 
                 update_display();
@@ -151,34 +160,15 @@ void check_pin_button()
                 }
                 else if (mode == 4)
                 {
-
-                    backup.begin("mon-app", false); // false = mode lecture/écriture
-
-                    TcalibOuvrir = TcalibOuvrir - 10;
-                    backup.putShort("TcalibOuvrir", TcalibOuvrir);
-                    backup.end(); // Ferme l'accès aux préférences
+                    ajuster_calib(TcalibOuvrir, -10, "TcalibOuvrir");
                 }
                 else if (mode == 5)
                 {
-                    if (TcalibFermer > 50)
-                    {
-                        backup.begin("mon-app", false); // false = mode lecture/écriture
-
-                        TcalibFermer = TcalibFermer - 10;
-                        backup.putShort("TcalibFermer", TcalibFermer);
-                        backup.end(); // Ferme l'accès aux préférences
-                    }
+                    ajuster_calib(TcalibFermer, -10, "TcalibFermer");
                 }
                 else if (mode == 6)
                 {
-                    if (Tcalib > 50)
-                    {
-                        backup.begin("mon-app", false); // false = mode lecture/écriture
-
-                        Tcalib = Tcalib - 10;
-                        backup.putShort("Tcalib", Tcalib);
-                        backup.end(); // Ferme l'accès aux préférences
-                    }
+                    ajuster_calib(Tcalib, -10, "Tcalib");
                 }
 
                 update_display();

@@ -27,8 +27,8 @@ Task t2(1000, TASK_FOREVER, &holdMQTT_Online); // Maintiens MQTT
 Task t3(2000, TASK_FOREVER, &update_display);
 Task t4(DELAI_REGUL, TASK_FOREVER, &regul_therm); // Fonction qui lance un controle de temp + action de thermostat
 Task t5(58000, TASK_FOREVER, &checkHorloge);      // Vérifie toutes les minutes si une commande doit être déclenchée
-Task t6(1000, TASK_FOREVER, &checkMouvVanneO);    // Vérifie si la vanne doit être arrêtée en fonction de la position du capteur magnétique
-Task t7(1000, TASK_FOREVER, &checkMouvVanneF);    // Vérifie si la vanne doit être arrêtée en fonction de la position du capteur magnétique
+Task t6(50, TASK_FOREVER, &checkMouvVanneO);    // Vérifie si la vanne doit être arrêtée en fonction de la position du capteur magnétique
+Task t7(50, TASK_FOREVER, &checkMouvVanneF);    // Vérifie si la vanne doit être arrêtée en fonction de la position du capteur magnétique
 Task t8(100, TASK_FOREVER, &calib_moteur);
 Task t9(DELAI_PUB_MQTT, TASK_FOREVER, &pub_mqtt); // Publication des valeurs MQTT toutes les 10min
 void init_scheduler()
@@ -48,7 +48,7 @@ void init_scheduler()
 
   t2.enableDelayed(5000);  // MQTT (délai réduit pour un traitement plus rapide)
   t3.enableDelayed(5000);  // Controle de l'heure
-  t4.enableDelayed(10000); // THERMOSTAT
+  // t4 (THERMOSTAT) est lancée à la fin de la calibration
   t5.enableDelayed(15000); // Check heure
   t9.enableDelayed(20000); // Publication MQTT
 }

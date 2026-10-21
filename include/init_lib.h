@@ -39,6 +39,7 @@ void manage_wifi();
 void regul_therm();
 void checkHorloge();
 void pub_mqtt(); 
+void check_manuel_distant();
 
 
 
